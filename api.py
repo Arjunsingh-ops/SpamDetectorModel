@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from translate import translate_to_english
 import joblib
 import pandas as pd
 
@@ -26,6 +27,7 @@ print(spam_numbers)
 class CallData(BaseModel):
     phone_number: str
     conversation: str
+    language: str = "en"
 
 
 @app.get("/")
@@ -59,6 +61,9 @@ def predict(data: CallData):
             "reason": f"Known number: {category}",
             "reports": reports
         }
+    if data.language.lower() == "hi":
+        data.conversation = translate_to_english(data.conversation)
+        print("Translated text:", data.conversation)
 
     # --------------------------------
     # STEP 2: Analyze conversation

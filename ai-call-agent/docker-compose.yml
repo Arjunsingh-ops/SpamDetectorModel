@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # PostgreSQL 16 Relational Store
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: ai_call_agent_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-callagent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-callagent_dev_pw}
+      POSTGRES_DB: ${POSTGRES_DB:-callagent_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-callagent} -d ${POSTGRES_DB:-callagent_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - callagent-network
+
+  # ----------------------------------------------------------------------------
+  # FastAPI Application Backend
+  # ----------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ai_call_agent_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      APP_NAME: ai-call-agent-backend
+      ENVIRONMENT: development
+      PORT: 8000
+      HOST: 0.0.0.0
+      LOG_LEVEL: INFO
+      DATABASE_URL: postgresql://callagent:callagent_dev_pw@postgres:5432/callagent_db
+      ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+      TELEPHONY_PROVIDER: mock
+      VOICE_AI_PROVIDER: mock
+      SPAM_ENGINE_PROVIDER: mock
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - callagent-network
+
+  # ----------------------------------------------------------------------------
+  # Report Scheduler Background Worker Service
+  # ----------------------------------------------------------------------------
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ai_call_agent_worker
+    restart: unless-stopped
+    command: ["python", "-m", "app.scheduling.scheduler"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      APP_NAME: ai-call-agent-worker
+      ENVIRONMENT: production
+      LOG_LEVEL: INFO
+      DATABASE_URL: postgresql://callagent:callagent_dev_pw@postgres:5432/callagent_db
+    volumes:
+      - report_storage:/app/storage/reports
+    networks:
+      - callagent-network
+
+volumes:
+  postgres_data:
+    driver: local
+  report_storage:
+    driver: local
+
+networks:
+  callagent-network:
+    driver: bridge

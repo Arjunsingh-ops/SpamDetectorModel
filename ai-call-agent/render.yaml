@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: ai-call-agent-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: standard
+    region: singapore
+    healthCheckPath: /health
+    envVars:
+      - key: APP_NAME
+        value: ai-call-agent-backend
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        value: 8000
+      - key: DATABASE_URL
+        sync: false # Configured securely in Render dashboard (Neon PostgreSQL URL)
+      - key: ALLOWED_ORIGINS
+        value: https://app.aicallagent.com
+      - key: TELEPHONY_PROVIDER
+        value: mock
+      - key: VOICE_AI_PROVIDER
+        value: mock
+      - key: SPAM_ENGINE_PROVIDER
+        value: mock
+      - key: LOG_LEVEL
+        value: INFO

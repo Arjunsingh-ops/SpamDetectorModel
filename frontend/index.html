@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Spam Call Detector</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <div class="shield">🛡️</div>
+            <h1>Spam Call Detector</h1>
+            <p>AI-powered call security system</p>
+        </header>
+
+        <main>
+
+            <div class="input-group">
+                <label for="phone">Phone Number</label>
+                <input
+                    type="text"
+                    id="phone"
+                    placeholder="+919999999999"
+                >
+            </div>
+
+            <div class="input-group">
+                <label for="conversation">Conversation</label>
+                <textarea
+                    id="conversation"
+                    placeholder="Enter the conversation here..."
+                ></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="language">Language</label>
+                <select id="language">
+                    <option value="en">English</option>
+                    <option value="hi">Hindi / Hinglish</option>
+                </select>
+            </div>
+
+            <button id="analyzeBtn">
+                🔍 Analyze Call
+            </button>
+
+            <div id="result" class="result hidden">
+
+                <div id="resultIcon"></div>
+
+                <h2 id="classification"></h2>
+
+                <div class="result-details">
+                    <div>
+                        <span>Confidence</span>
+                        <strong id="confidence"></strong>
+                    </div>
+
+                    <div>
+                        <span>Reason</span>
+                        <strong id="reason"></strong>
+                    </div>
+
+                    <div id="reportsBox">
+                        <span>Reports</span>
+                        <strong id="reports"></strong>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer>
+            <span>AI Call Security</span>
+            <span>•</span>
+            <span>ML Powered</span>
+        </footer>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

@@ -1,11 +1,18 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from translate import translate_to_english
 import joblib
 import pandas as pd
 
 app = FastAPI()
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Load ML model and TF-IDF vectorizer
 model = joblib.load("spam_model.pkl")
 vectorizer = joblib.load("tfidf_vectorizer.pkl")
@@ -13,13 +20,46 @@ vectorizer = joblib.load("tfidf_vectorizer.pkl")
 # Load spam-number database
 spam_data = pd.read_csv("spam_numbers.csv")
 
+def normalize_phone_number(phone_number):
+    return "".join(
+        character
+        for character in str(phone_number)
+        if character.isdigit()
+    )
+
 spam_data["phone_number"] = (
     spam_data["phone_number"]
     .astype(str)
-    .str.replace("+", "", regex=False)
-    .str.strip()
+    .apply(normalize_phone_number)
 )
 spam_numbers = set(spam_data["phone_number"])
+
+def add_spam_number(phone_number, category="conversation detected"):
+    global spam_data, spam_numbers
+
+    if phone_number not in spam_numbers:
+
+        new_row = pd.DataFrame([{
+            "phone_number": phone_number,
+            "category": category,
+            "reports": 1
+        }])
+
+        new_row.to_csv(
+            "spam_numbers.csv",
+            mode="a",
+            header=False,
+            index=False
+        )
+
+        # Update memory as well
+        spam_data = pd.concat(
+            [spam_data, new_row],
+            ignore_index=True
+        )
+
+        spam_numbers.add(phone_number)
+
 print("Spam numbers:")
 print(spam_numbers)
 
@@ -39,11 +79,7 @@ def home():
 
 @app.post("/predict")
 def predict(data: CallData):
-    phone_number = (
-    data.phone_number
-    .replace("+", "")
-    .strip()
-    )
+    phone_number = normalize_phone_number(data.phone_number)
     if phone_number in spam_numbers:
 
         number_info = spam_data[
@@ -79,6 +115,11 @@ def predict(data: CallData):
 
     if prediction[0] == 1:
         result = "SPAM / SCAM"
+
+        add_spam_number(
+            phone_number,
+            "conversation detected"
+        )
     else:
         result = "NORMAL"
 

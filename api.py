@@ -76,6 +76,34 @@ def home():
         "message": "Spam Call Detector API is running"
     }
 
+def get_spam_reason(text):
+    text = text.lower()
+
+    indicators = {
+        "otp": "The conversation asks for an OTP or verification code.",
+        "one-time password": "The conversation asks for an OTP or verification code.",
+        "bank account": "The conversation involves sensitive bank account information.",
+        "bank details": "The conversation asks for sensitive banking details.",
+        "credit card": "The conversation involves sensitive credit card information.",
+        "debit card": "The conversation involves sensitive debit card information.",
+        "password": "The conversation asks for a password or other sensitive credential.",
+        "processing fee": "The conversation asks for a processing fee or payment.",
+        "lottery": "The conversation contains a lottery or prize-related offer.",
+        "prize": "The conversation contains a prize-related offer.",
+        "urgent": "The conversation uses urgency to pressure the recipient.",
+        "verify your account": "The conversation asks the recipient to verify an account.",
+    }
+
+    reasons = []
+
+    for keyword, reason in indicators.items():
+        if keyword in text and reason not in reasons:
+            reasons.append(reason)
+
+    if reasons:
+        return " ".join(reasons)
+
+    return "The conversation contains patterns associated with spam or scam calls."
 
 @app.post("/predict")
 def predict(data: CallData):
@@ -101,20 +129,33 @@ def predict(data: CallData):
         data.conversation = translate_to_english(data.conversation)
         print("Translated text:", data.conversation)
 
-    # --------------------------------
-    # STEP 2: Analyze conversation
-    # --------------------------------
-    text_vector = vectorizer.transform(
-        [data.conversation]
-    )
+    spam_keywords = [
+    "lottery",
+    "won",
+    "jackpot",
+    "million dollar",
+    "billion dollar",
+    "click the link"
+    ]
 
-    prediction = model.predict(text_vector)
-    probabilities = model.predict_proba(text_vector)
+    conversation_lower = data.conversation.lower()
 
-    confidence = max(probabilities[0])
+    if any(keyword in conversation_lower for keyword in spam_keywords):
+        prediction = [1]
+        confidence = 0.99
+    else:
+        text_vector = vectorizer.transform([data.conversation])
+
+        prediction = model.predict(text_vector)
+
+        probabilities = model.predict_proba(text_vector)
+
+        confidence = max(probabilities[0])
 
     if prediction[0] == 1:
         result = "SPAM / SCAM"
+
+        spam_reason = get_spam_reason(data.conversation)
 
         add_spam_number(
             phone_number,
@@ -122,9 +163,11 @@ def predict(data: CallData):
         )
     else:
         result = "NORMAL"
+        spam_reason = None
 
     return {
-        "classification": result,
-        "confidence": round(float(confidence), 2),
-        "reason": "Conversation analysis"
+    "classification": result,
+    "confidence": round(float(confidence), 2),
+    "reason": "Conversation analysis",
+    "details": spam_reason
     }

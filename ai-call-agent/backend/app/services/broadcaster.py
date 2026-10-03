@@ -25,8 +25,8 @@ class CallEventBroadcaster:
         self._listeners.discard(queue)
         logger.debug(f"Dashboard SSE listener unsubscribed. Remaining listeners: {len(self._listeners)}")
 
-    async def broadcast(self, event_type: str, data: Dict[str, Any]) -> None:
-        """Broadcast a call update event to all active dashboard subscribers."""
+    def broadcast_sync(self, event_type: str, data: Dict[str, Any]) -> None:
+        """Synchronously broadcast a call update event to active dashboard subscribers."""
         if not self._listeners:
             return
 
@@ -41,6 +41,14 @@ class CallEventBroadcaster:
                 queue.put_nowait(payload)
             except Exception as err:
                 logger.error(f"Error putting event into broadcast queue: {err}")
+
+    def broadcast_event(self, event_type: str, data: Dict[str, Any]) -> None:
+        """Alias for broadcast_sync to support synchronous coordinators."""
+        self.broadcast_sync(event_type, data)
+
+    async def broadcast(self, event_type: str, data: Dict[str, Any]) -> None:
+        """Broadcast a call update event to all active dashboard subscribers."""
+        self.broadcast_sync(event_type, data)
 
 
 broadcaster = CallEventBroadcaster()

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { KpiCard } from '@/components/dashboard/kpi-card';
+import { PersonalCallScreener } from '@/components/screening/personal-call-screener';
 import { LiveCallSimulator } from '@/components/dashboard/live-simulator';
 import { CallTable } from '@/components/calls/call-table';
 import { fetchAnalyticsOverview, fetchCalls } from '@/lib/api';
@@ -46,12 +47,14 @@ export default function OverviewPage({ onOpenMobileNav }: PageProps) {
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)]">
       <Header
-        title="Telephony Control Plane Overview"
-        subtitle="Real-time KPI metrics, active SIP trunk streams, multi-signal fraud shield, and warm PSTN forwarding."
+        title="Personal AI Call Screening"
+        subtitle="AI answers first, verifies caller purpose, blocks scams, and automatically bridges safe callers to you."
         onOpenMobileNav={onOpenMobileNav}
       />
 
-      <main className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-4">
+      <main className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
+        {/* Central Personal Smartphone Call Screener Experience */}
+        <PersonalCallScreener />
         {/* Date Filter & Control Bar */}
         <div className="card-panel p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs font-medium">

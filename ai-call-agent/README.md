@@ -1,55 +1,72 @@
-# AI Call Agent - Virtual Receptionist & Multi-Factor Spam Screening Platform
+# AI Call Agent - Personal AI Call Screener & Safe Forwarding Platform
 
-> **Stage 4 & 5 Monorepo Platform**  
-> Complete implementation of the AI Virtual Receptionist, Telephony Abstraction Layer, Multi-Factor Spam Engine, Next.js Operations Dashboard, and Automated Reporting Infrastructure.
+> **Stages 1–10 End-to-End Real-Time System**  
+> Complete implementation of the Personal AI Virtual Receptionist, Provider-Independent Telephony Layer, Multi-Factor Fraud Screening Engine, Automatic Safe Call Forwarding, and Next.js Smartphone Call Screener Interface.
 
 ---
 
-## 📌 Executive Architecture & Component Map
+## 📌 Workflow Overview
 
 ```mermaid
-flowchart LR
-    Telephony[Telephony Carrier / Webhook] --> TAL[Telephony Abstraction Layer]
-    TAL --> VoiceAI[Bilingual Voice AI Engine\nEnglish + हिन्दी]
-    VoiceAI --> SpamEngine[Multi-Factor Spam Engine\nReputation 40% + Semantics 50% + Audio 10%]
+flowchart TD
+    Inbound([Incoming Caller]) --> TAL[Telephony Adapter\nTwilio / SIP / Mock]
+    TAL --> Webhook[FastAPI Inbound Webhook\nPOST /api/v1/telephony/incoming]
+    Webhook --> Screener[AI Call Screening Orchestrator]
     
-    SpamEngine -->|Risk < 40| Routing[Warm / Cold Transfer]
-    SpamEngine -->|Risk 40-69| Challenge[Interactive Challenge]
-    SpamEngine -->|Risk >= 70| Quarantine[Spam Review Queue]
-
-    Routing --> Recipient[Human Recipient Line]
-    Quarantine --> Operator[Human-in-the-Loop Review]
-    SpamEngine <--> DB[(PostgreSQL Store)]
-    DB <--> Dashboard[Next.js Operations Dashboard]
+    subgraph Audio & AI Pipeline
+        Screener --> Audio[Media Stream + VAD]
+        Audio --> STT[Faster-Whisper STT\nEnglish, Hindi, Hinglish]
+        STT --> Dialogue[Screening Dialogue & Slot Extraction]
+        Dialogue --> SpamEngine[Hybrid Spam Engine\nML TF-IDF + Rules + Known Numbers]
+    end
+    
+    SpamEngine --> Gate{Safety Policy Gate}
+    Gate -->|Low Risk & Purpose Identified| Forward[Stage 6 Transfer Coordinator\nRings User Destination]
+    Gate -->|Uncertain Risk| Followup[Neutral Screening Question\nContinue Screening]
+    Gate -->|High Risk Scam / Threat| Block[AI Handles Call\nUser Not Disturbed]
+    
+    Forward --> UserRing([User Phone / Browser Rings])
+    UserRing -->|User Answers| Bridge[Audio Bridge Established\nCaller <--> User]
+    Bridge --> AIExit[AI Leaves Call\nCONNECTED_TO_USER]
+    UserRing -->|User Declines / Timeout| Voicemail[AI Resumes\nOffers Voicemail]
 ```
 
 ---
 
-## 🛠️ Component Breakdown
+## 🛠️ Directory Structure
 
-- **[`backend/`](backend)**: FastAPI Python 3.11 web service with SQLAlchemy 2.0 ORM, Pydantic v2 schemas, Call state machine, STT/TTS adapters, and APScheduler report generation.
-- **[`frontend/`](frontend)**: Next.js 15 App Router management dashboard with live call simulation, spam review queue, call routing configuration, and visual analytics.
-- **[`spam-detector/`](spam-detector)**: Microservice and standalone ML trainer utilizing TF-IDF vectorization and Naive Bayes / Logistic Regression for scam intent classification.
-- **[`docs/`](docs)**: Production architecture blueprints, call flow state machines, OpenAPI contracts, database ERD schemas, security compliance specs, and ADRs.
+- **[`backend/`](backend/)**: FastAPI Python application with telephony adapters (`twilio.py`, `sip.py`, `mock.py`), conversation screening dialogue engine, hybrid spam detector, call state machine, and E2E verification test suite (`run_e2e_screening_tests.py`).
+- **[`frontend/`](frontend/)**: Next.js 16 (Turbopack) application featuring the interactive **Personal Call Screener** smartphone interface, live call monitor, call history, fraud shield controls, and personalization settings.
+- **[`spam-detector/`](spam-detector/)**: Scikit-Learn TF-IDF vectorizer and Logistic Regression models trained on telecom spam corpora.
+- **[`docs/`](docs/)**: Architecture specifications, API contracts, call state machines, and ADR records.
 
 ---
 
 ## 🚀 Quick Execution
 
-### Start Backend
+### 1. Start Backend Server
 ```bash
 cd backend
-.venv\Scripts\activate
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+.\.venv\Scripts\activate
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
+- Health Probe: `http://127.0.0.1:8000/health`
+- Interactive Swagger: `http://127.0.0.1:8000/docs`
 
-### Start Frontend
+### 2. Start Frontend App
 ```bash
 cd frontend
 npm run dev
 ```
+- Open `http://localhost:3000` to access the personal smartphone call screener.
 
-### Interactive Dashboard Testing
-Open **`http://localhost:3000`** in your browser to access the live call simulator, bilingual voice agent testing, spam review quarantine, and report generators.
+### 3. Run Automated E2E Test Suite
+```bash
+cd backend
+.\.venv\Scripts\python.exe run_e2e_screening_tests.py
+```
+*(All 12/12 test scenarios pass with 100% success).*
 
-For complete system details, refer to the master [`README.md`](../README.md) at the repository root.
+---
+
+For comprehensive architecture details, telephony carrier setup, and regulatory compliance information, refer to the master [`README.md`](../README.md) in the root directory.

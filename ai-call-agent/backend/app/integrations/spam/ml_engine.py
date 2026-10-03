@@ -181,3 +181,6 @@ class MLSpamDetectionAdapter(SpamDetectionAdapter):
             "ai_rationale": rationale,
             "engine": "MLSpamDetectionAdapter" if self.model_loaded else "HeuristicMLSpamDetectionAdapter"
         }
+
+
+ml_spam_adapter = MLSpamDetectionAdapter()

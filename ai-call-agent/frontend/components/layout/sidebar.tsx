@@ -46,36 +46,26 @@ interface NavItem {
 
 const NAV_CATEGORIES: NavCategory[] = [
   {
-    category: 'CORE TELEPHONY',
+    category: 'PERSONAL CALL ASSISTANT',
     items: [
-      { href: '/', label: 'Overview', icon: LayoutDashboard, allowedRoles: ['admin', 'operator', 'receptionist', 'viewer'] },
-      { href: '/live-calls', label: 'Live Calls Monitor', icon: Radio, liveBadge: true, badgeCount: (rt) => rt.activeCalls.length || null, allowedRoles: ['admin', 'operator', 'receptionist', 'viewer'] },
-      { href: '/call-history', label: 'Call History & Logs', icon: History, allowedRoles: ['admin', 'operator', 'viewer'] },
+      { href: '/', label: 'Home (Call Screener)', icon: LayoutDashboard, allowedRoles: ['admin', 'operator', 'receptionist', 'viewer'] },
+      { href: '/live-calls', label: 'Calls & Live Screening', icon: Radio, liveBadge: true, badgeCount: (rt) => rt.activeCalls.length || null, allowedRoles: ['admin', 'operator', 'receptionist', 'viewer'] },
+      { href: '/call-history', label: 'Call History', icon: History, allowedRoles: ['admin', 'operator', 'viewer'] },
+      { href: '/spam-review', label: 'Protection & Spam Shield', icon: ShieldAlert, badgeCount: () => 3, allowedRoles: ['admin', 'operator', 'receptionist'] },
+      { href: '/voice-agent', label: 'Assistant Persona & Voice', icon: Mic, allowedRoles: ['admin'] },
+      { href: '/settings', label: 'Settings & Forwarding', icon: Settings, allowedRoles: ['admin', 'operator', 'viewer'] },
     ],
   },
   {
-    category: 'INTELLIGENCE & SHIELD',
-    items: [
-      { href: '/spam-review', label: 'Fraud Shield & Review', icon: ShieldAlert, badgeCount: () => 3, allowedRoles: ['admin', 'operator', 'receptionist'] },
-      { href: '/voice-agent', label: 'AI Voice Receptionist', icon: Mic, allowedRoles: ['admin'] },
-      { href: '/analytics', label: 'Telephony Analytics', icon: BarChart3, allowedRoles: ['admin', 'operator', 'viewer'] },
-      { href: '/reports', label: 'Audit Reports', icon: FileText, allowedRoles: ['admin', 'operator', 'viewer'] },
-    ],
-  },
-  {
-    category: 'ROUTING & DIRECTORY',
+    category: 'ADVANCED TELEPHONY & SYSTEM',
     items: [
       { href: '/call-routing', label: 'Smart PSTN Routing', icon: PhoneForwarded, allowedRoles: ['admin', 'operator', 'receptionist'] },
       { href: '/recipients', label: 'Staff Directory', icon: Users, allowedRoles: ['admin', 'operator', 'receptionist'] },
       { href: '/voicemail', label: 'Voicemail Inbox', icon: Voicemail, badgeCount: () => 2, allowedRoles: ['admin', 'operator', 'receptionist'] },
       { href: '/callbacks', label: 'Callback Queue', icon: PhoneCall, badgeCount: () => 2, allowedRoles: ['admin', 'operator', 'receptionist'] },
-    ],
-  },
-  {
-    category: 'ADMINISTRATION',
-    items: [
+      { href: '/analytics', label: 'Telephony Analytics', icon: BarChart3, allowedRoles: ['admin', 'operator', 'viewer'] },
+      { href: '/reports', label: 'Audit Reports', icon: FileText, allowedRoles: ['admin', 'operator', 'viewer'] },
       { href: '/users', label: 'Users & Roles (RBAC)', icon: UserCheck, allowedRoles: ['admin'] },
-      { href: '/settings', label: 'System Settings', icon: Settings, allowedRoles: ['admin', 'operator', 'viewer'] },
     ],
   },
 ];

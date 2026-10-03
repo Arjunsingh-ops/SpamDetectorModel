@@ -1,107 +1,185 @@
-"""Telephony Webhooks, Media Stream WebSocket, and SSE Endpoint Router."""
+"""Telephony Webhooks, Media Stream WebSocket, Screening Orchestrator, and SSE Endpoint Router."""
 
 import json
 import asyncio
 import logging
-from typing import Optional
-from fastapi import APIRouter, Request, Response, Depends, HTTPException, WebSocket, Query
+from typing import Optional, Dict, Any
+from fastapi import APIRouter, Request, Response, Depends, HTTPException, WebSocket, Query, Body, Path
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.core.config import settings
 from app.core.security import get_current_user_from_token
-from app.integrations.telephony.twilio_adapter import twilio_telephony_adapter
-from app.integrations.telephony.mock_adapter import mock_telephony_adapter
+from app.telephony import get_telephony_adapter
 from app.integrations.telephony.media_stream import MediaStreamSession
+from app.services.call_screening_orchestrator import call_screening_orchestrator
 from app.services.call_session import call_session_service
 from app.services.call_lifecycle import call_lifecycle_service
 from app.services.broadcaster import broadcaster
+from app.schemas.screening import PersonalAssistantSettings, UserScreeningActionRequest
 
 logger = logging.getLogger("ai_call_agent.api.v1.telephony")
 
 router = APIRouter(prefix="/telephony", tags=["telephony"])
 
 
-def get_active_adapter():
-    """Return provider adapter based on TELEPHONY_PROVIDER setting."""
-    provider = getattr(settings, "TELEPHONY_PROVIDER", "twilio").lower()
-    if provider == "mock":
-        return mock_telephony_adapter
-    return twilio_telephony_adapter
-
-
 @router.post("/incoming")
 async def handle_incoming_call(request: Request, db: Session = Depends(get_db)):
     """
-    Webhook endpoint for inbound call notifications from carrier (Twilio / Exotel / Mock).
-    Validates webhook signature, initializes call session in DB, returns greeting TwiML XML.
+    Production Webhook endpoint for inbound calls from carrier (Twilio / SIP / Mock).
+    Validates webhook signature, initializes call session, triggers personal AI answering & greeting.
     """
-    # Parse form parameters (Twilio sends application/x-www-form-urlencoded)
     form_data = await request.form()
     params = dict(form_data)
-
-    # If empty form_data (e.g. JSON test payload), fallback to JSON body
     if not params:
         try:
             params = await request.json()
         except Exception:
             params = {}
 
-    adapter = get_active_adapter()
+    adapter = get_telephony_adapter()
 
-    # Signature verification
+    # Cryptographic signature verification
     signature = request.headers.get("X-Twilio-Signature", "")
     full_url = str(request.url)
-
     if not adapter.verify_webhook_signature(full_url, params, signature):
         logger.warning(f"Rejected invalid telephony incoming webhook signature from {request.client.host}")
         raise HTTPException(status_code=403, detail="Invalid carrier webhook signature.")
 
-    # Normalize payload
     parsed = adapter.parse_inbound_webhook(params)
-    if not parsed.get("provider_call_id"):
+    if not parsed.get("provider_call_id") and not parsed.get("external_call_sid"):
         raise HTTPException(status_code=400, detail="Missing carrier CallSid parameter.")
 
-    # Idempotent call session creation in PostgreSQL
-    call, is_new = call_session_service.get_or_create_inbound_session(db, parsed)
-
-    # Determine WSS stream URL
-    public_wss = getattr(settings, "PUBLIC_WSS_URL", "wss://localhost:8000")
-    if public_wss.endswith("/"):
-        public_wss = public_wss[:-1]
-    stream_url = f"{public_wss}/api/v1/telephony/stream"
-
-    # Greeting configuration
-    greeting_lang = getattr(settings, "DEFAULT_LANGUAGE", "en-IN")
-    if greeting_lang == "hi-IN":
-        greeting_text = "नमस्ते, आपने हमारे एआई रिसेप्शन सेवा से संपर्क किया है। कृपया अपनी कॉल का कारण बताएं।"
-    else:
-        greeting_text = "Hello, you've reached our AI-assisted reception service. This call may be processed to help direct your request. Please tell us the reason for your call."
-
-    twiml_content = adapter.generate_answer_response(
-        call_id=str(call.id),
-        stream_url=stream_url,
-        initial_greeting=greeting_text,
-        language=greeting_lang,
-        recording_notice=True,
+    # Execute orchestrator inbound call initialization
+    result = await call_screening_orchestrator.handle_inbound_call(
+        db=db,
+        provider_data=parsed,
+        is_simulation=False,
     )
 
-    # Broadcast event to active dashboard subscribers
-    asyncio.create_task(
-        broadcaster.broadcast(
-            "INCOMING_CALL",
-            {
-                "call_id": str(call.id),
-                "provider_call_id": call.provider_call_id,
-                "caller_number": call.caller_number,
-                "status": call.status,
-                "started_at": call.started_at.isoformat() if call.started_at else None,
-            },
+    if adapter.name == "twilio":
+        return Response(content=result["provider_response"], media_type="application/xml")
+    return Response(content=result["provider_response"], media_type="application/json")
+
+
+@router.post("/utterance")
+async def handle_caller_utterance(
+    call_id: str = Body(..., embed=True),
+    transcript: Optional[str] = Body(None, embed=True),
+    speech: Optional[str] = Body(None, embed=True),
+    question_count: int = Body(default=1, embed=True),
+    db: Session = Depends(get_db),
+):
+    """
+    Process caller speech turn during screening:
+    Runs speech recognition -> Intent slot extraction -> Multi-factor fraud engine
+    -> Safe forwarding / continue screening / quarantine decision.
+    """
+    caller_text = speech or transcript or ""
+    res = await call_screening_orchestrator.process_caller_utterance(
+        db=db,
+        call_id=call_id,
+        caller_speech=caller_text,
+        question_count=question_count,
+        is_simulation=False,
+    )
+    return res
+
+
+@router.post("/calls/{id}/user-action")
+async def handle_user_screening_action(
+    id: str = Path(..., description="Call ID or External SID"),
+    action_data: UserScreeningActionRequest = Body(...),
+    db: Session = Depends(get_db),
+):
+    """
+    Action executed by user when receiving an AI-screened incoming call:
+    - ANSWER: Confirms transfer, stops AI speech/inference, bridges caller and user, AI exits.
+    - DECLINE: AI resumes control, offers voicemail or callback.
+    - LET_AI_HANDLE: AI continues screening / takes message.
+    - TAKE_OVER: Immediate manual bridge.
+    """
+    res = await call_screening_orchestrator.handle_user_decision(
+        db=db,
+        call_id=id,
+        action=action_data.action,
+        notes=action_data.notes,
+    )
+    return res
+
+
+@router.post("/simulate")
+async def simulate_call_screening_flow(
+    caller_number: str = Body("+919876543210", embed=True),
+    caller_name: Optional[str] = Body(None, embed=True),
+    caller_speech: Optional[str] = Body(None, embed=True),
+    question_count: int = Body(1, embed=True),
+    db: Session = Depends(get_db),
+):
+    """
+    Full End-to-End Browser Simulator Endpoint (Browser A: Caller -> Browser B: User).
+    Simulates real-world phone screening without requiring paid telephony carrier accounts.
+    """
+    sim_data = {
+        "external_call_sid": f"sim-{int(asyncio.get_event_loop().time() * 1000)}",
+        "caller_number": caller_number,
+        "destination_number": "+911122334455",
+        "caller_name": caller_name,
+        "telephony_provider": "mock",
+    }
+
+    # 1. AI Answers Call
+    inbound_res = await call_screening_orchestrator.handle_inbound_call(
+        db=db,
+        provider_data=sim_data,
+        is_simulation=True,
+    )
+    call_id = inbound_res["call_id"]
+
+    response = {
+        "status": "success",
+        "simulation": True,
+        "call_id": call_id,
+        "external_call_sid": inbound_res["external_call_sid"],
+        "initial_greeting": inbound_res["greeting"],
+    }
+
+    # 2. If caller speech provided, process it through the AI conversation & spam pipeline
+    if caller_speech:
+        screening_res = await call_screening_orchestrator.process_caller_utterance(
+            db=db,
+            call_id=call_id,
+            caller_speech=caller_speech,
+            question_count=question_count,
+            is_simulation=True,
         )
-    )
+        response.update({
+            "caller_speech": caller_speech,
+            "screening_info": screening_res["screening_info"],
+            "risk_assessment": screening_res["risk_assessment"],
+            "recommended_action": screening_res["recommended_action"],
+            "decision": screening_res["decision"],
+            "next_ai_utterance": screening_res["next_ai_utterance"],
+            "user_prompt_required": screening_res["user_prompt_required"],
+            "transfer": screening_res.get("transfer"),
+        })
 
-    return Response(content=twiml_content, media_type="application/xml")
+    return response
+
+
+@router.get("/screening-settings")
+def get_personal_screening_settings():
+    """Retrieve active personal assistant and screening policy settings."""
+    return call_screening_orchestrator.settings.model_dump()
+
+
+@router.put("/screening-settings")
+def update_personal_screening_settings(settings_update: PersonalAssistantSettings):
+    """Update personal assistant settings (user name, greeting, thresholds, etc.)."""
+    call_screening_orchestrator.settings = settings_update
+    call_screening_orchestrator.screening_dialogue.settings = settings_update
+    return {"status": "updated", "settings": call_screening_orchestrator.settings.model_dump()}
 
 
 @router.post("/status")
@@ -117,7 +195,7 @@ async def handle_call_status(request: Request, db: Session = Depends(get_db)):
         except Exception:
             params = {}
 
-    adapter = get_active_adapter()
+    adapter = get_telephony_adapter()
     signature = request.headers.get("X-Twilio-Signature", "")
     full_url = str(request.url)
 
@@ -125,8 +203,8 @@ async def handle_call_status(request: Request, db: Session = Depends(get_db)):
         logger.warning(f"Rejected invalid telephony status webhook signature from {request.client.host}")
         raise HTTPException(status_code=403, detail="Invalid status webhook signature.")
 
-    provider_call_id = params.get("CallSid", "")
-    status_str = params.get("CallStatus", "completed")
+    provider_call_id = params.get("CallSid") or params.get("external_call_sid") or ""
+    status_str = params.get("CallStatus") or params.get("status") or "completed"
     duration = int(params.get("CallDuration", 0) or 0)
     error_code = params.get("ErrorCode")
 
@@ -160,7 +238,7 @@ async def handle_call_status(request: Request, db: Session = Depends(get_db)):
 @router.websocket("/stream")
 async def handle_telephony_media_stream(websocket: WebSocket):
     """
-    WebSocket endpoint for bidirectional real-time audio media streaming from Twilio Media Streams.
+    WebSocket endpoint for bidirectional real-time audio media streaming from telephony providers.
     """
     session = MediaStreamSession(websocket=websocket)
     await session.accept()
@@ -176,7 +254,6 @@ async def stream_live_call_events(
     Server-Sent Events (SSE) live streaming endpoint for the dashboard.
     Pushes real-time call notifications to connected UI components.
     """
-    # Verify authentication token if provided
     if token:
         try:
             get_current_user_from_token(token, db)
@@ -186,9 +263,7 @@ async def stream_live_call_events(
     async def event_generator():
         queue = broadcaster.subscribe()
         try:
-            # Send initial connection handshake
             yield f"data: {json.dumps({'event': 'CONNECTED', 'message': 'Live telephony stream active'})}\n\n"
-
             while True:
                 payload = await queue.get()
                 yield f"data: {json.dumps(payload)}\n\n"

@@ -27,6 +27,25 @@ from app.schemas.screening import UnifiedRiskAssessment, ExtractedScreeningInfo
 logger = logging.getLogger("ai_call_agent.spam.engine")
 
 
+SPAM_INDICATORS = {
+    "otp": "The conversation asks for an OTP or verification code.",
+    "one-time password": "The conversation asks for an OTP or verification code.",
+    "bank account": "The conversation involves sensitive bank account information.",
+    "bank details": "The conversation asks for sensitive banking details.",
+    "credit card": "The conversation involves sensitive credit card information.",
+    "debit card": "The conversation involves sensitive debit card information.",
+    "password": "The conversation asks for a password or other sensitive credential.",
+    "processing fee": "The conversation asks for a processing fee or payment.",
+    "lottery": "The conversation contains a lottery or prize-related offer.",
+    "jackpot": "The conversation contains a jackpot or lottery claim.",
+    "prize": "The conversation contains an unsolicited prize offer.",
+    "urgent": "The conversation uses urgency or coercion to pressure the recipient.",
+    "verify your account": "The conversation asks the recipient to verify an account.",
+    "kyc": "The conversation requests KYC / identity verification.",
+    "remote access": "The conversation requests downloading remote access software.",
+}
+
+
 class HybridSpamEngine:
     """
     Production Hybrid Spam Engine combining Caller Reputation, Lexical/ML Semantics,
@@ -226,9 +245,16 @@ class HybridSpamEngine:
         # - Caller name identified OR saved contact / allowlisted
         has_sufficient_evidence = bool(screening_info.purpose and (screening_info.caller_name or allowlisted))
 
+        matching_reasons = [desc for kw, desc in SPAM_INDICATORS.items() if kw in text_lower]
+        indicator_summary = " ".join(matching_reasons) if matching_reasons else None
+
         if risk_level == "HIGH" or blocklisted:
             recommended_action = "DO_NOT_FORWARD"
-            reasoning = (
+            # Dynamically auto-quarantine confirmed scam number for future zero-latency blocking
+            if caller_number and risk_level == "HIGH":
+                ml_spam_adapter.add_flagged_number(caller_number, category)
+
+            reasoning = indicator_summary or (
                 f"High threat score ({risk_score:.2f}) with category {category}. "
                 f"Triggers: {', '.join(flagged_phrases[:3]) or 'Threat heuristic match'}."
             )

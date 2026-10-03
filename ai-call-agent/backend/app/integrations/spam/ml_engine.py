@@ -48,18 +48,18 @@ class MLSpamDetectionAdapter(SpamDetectionAdapter):
 
         self._load_artifacts()
 
+    @staticmethod
+    def normalize_phone_number(number: str) -> str:
+        """Strip non-digits to ensure consistent lookup across +91, spaces, and dashes."""
+        return "".join(c for c in str(number) if c.isdigit())
+
     def _load_artifacts(self):
         # Load spam numbers CSV if available
         if os.path.exists(self.csv_path):
             try:
                 df = pd.read_csv(self.csv_path)
                 if "phone_number" in df.columns:
-                    df["clean_number"] = (
-                        df["phone_number"]
-                        .astype(str)
-                        .str.replace("+", "", regex=False)
-                        .str.strip()
-                    )
+                    df["clean_number"] = df["phone_number"].astype(str).apply(self.normalize_phone_number)
                     self.spam_numbers_df = df
                     self.known_spam_numbers = set(df["clean_number"])
                     logger.info(f"[MLSpamEngine] Loaded {len(self.known_spam_numbers)} spam numbers from CSV.")
@@ -78,6 +78,24 @@ class MLSpamDetectionAdapter(SpamDetectionAdapter):
         else:
             logger.info("[MLSpamEngine] ML artifacts not found or joblib missing, falling back to heuristic ML mode.")
 
+    def add_flagged_number(self, phone_number: str, category: str = "conversation detected") -> None:
+        """Dynamically add confirmed scam numbers to runtime set and persist to CSV."""
+        clean_num = self.normalize_phone_number(phone_number)
+        if not clean_num or clean_num in self.known_spam_numbers:
+            return
+
+        self.known_spam_numbers.add(clean_num)
+        try:
+            new_row = pd.DataFrame([{
+                "phone_number": phone_number,
+                "category": category,
+                "reports": 1
+            }])
+            new_row.to_csv(self.csv_path, mode="a", header=not os.path.exists(self.csv_path), index=False)
+            logger.info(f"[MLSpamEngine] Auto-quarantined new spam number: {phone_number} ({category})")
+        except Exception as e:
+            logger.warning(f"[MLSpamEngine] Could not persist new spam number: {e}")
+
     def evaluate_call(
         self,
         caller_number: str,
@@ -85,7 +103,7 @@ class MLSpamDetectionAdapter(SpamDetectionAdapter):
         audio_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         logger.info(f"[MLSpamEngine] Evaluating call risk for {caller_number}")
-        clean_num = caller_number.replace("+", "").strip()
+        clean_num = self.normalize_phone_number(caller_number)
 
         # Pillar A: Reputation & Carrier Lookup (0-100)
         reputation_score = 0

@@ -1,0 +1,83 @@
+conversation,label
+Your bank account has been flagged. Tell me the OTP you received to verify your identity.,1
+We detected a suspicious transaction. Please read the OTP sent to your phone so I can cancel it.,1
+Your account will be blocked unless you provide the OTP we just sent you.,1
+I am calling from your bank security team. Please share the OTP to confirm this transaction.,1
+Your KYC verification is incomplete. Give me the OTP you received to complete it.,1
+Your debit card will be blocked today. Tell me the verification OTP to keep it active.,1
+We need your OTP to process your refund. Please read the code to me.,1
+Your bank account has suspicious activity. Share the OTP so we can secure your account.,1
+I am from customer support. Please provide the OTP sent to your phone so I can verify your account.,1
+Your credit card has been selected for an upgrade. Tell me the OTP to activate it.,1
+Your loan application requires OTP verification. Please give me the OTP over the phone.,1
+Your account verification is pending. Share the OTP and we will complete it for you.,1
+We have sent an OTP to cancel the unauthorized payment. Please tell me the code.,1
+Your SIM will be blocked today. Give me the OTP to complete your SIM verification.,1
+Your mobile number needs urgent verification. Please read the OTP to me.,1
+Your bank account will be frozen unless you confirm the OTP immediately.,1
+We are processing your lottery winnings. Tell us the OTP to release the money.,1
+You have won a prize. Provide the OTP sent to your phone to claim your reward.,1
+Your delivery payment failed. Tell me the OTP so I can complete the payment for you.,1
+Your refund is ready. Please provide the OTP received on your phone to receive the money.,1
+Congratulations! You have won a lottery prize of 50 lakh rupees. Pay the processing fee to claim your prize.,1
+You are the lucky winner of our international lottery. Send your bank details to receive the money.,1
+"Congratulations, you won a billion dollar lottery! Contact us immediately to claim your prize.",1
+Your mobile number has been selected for a cash prize. Pay the registration fee to receive it.,1
+"Hello, I am calling from customer support. We noticed a problem with your account. Please install this application so I can help you.",1
+Your online banking account has a security problem. Give me remote access to your computer so I can fix it.,1
+We are calling from technical support. Please download this remote access application and share the access code.,1
+You have been approved for a personal loan of 10 lakh rupees. Pay a small processing fee to release the amount.,1
+"Congratulations, you are eligible for a premium credit card. Please provide your bank details to complete the application.",1
+Your instant loan is ready. Send the verification fee and your account information to receive the money.,1
+You have been selected for a work from home job earning 5000 rupees per day. Pay the registration fee to start.,1
+"Congratulations, your job application has been approved. Send your identity documents and processing fee.",1
+We have a high paying online job for you. First pay the security deposit to activate your account.,1
+Our investment platform can double your money in seven days. Transfer money to our account to start investing.,1
+You have been selected for a special cryptocurrency investment opportunity. Send the initial investment today.,1
+Invest 10000 rupees with us and receive guaranteed returns of 50000 rupees.,1
+Your package is stuck because of an unpaid customs fee. Pay the charge using this link to receive your delivery.,1
+We are calling about your delivery. Please provide your card details to pay the small delivery fee.,1
+Your parcel could not be delivered. Pay the redelivery charge immediately to avoid returning the package.,1
+Your SIM card will be permanently blocked today because your documents are not verified. Provide your Aadhaar details immediately.,1
+This is a call from the government department. Your number has been involved in illegal activity. Pay the verification fee to avoid action.,1
+Your SIM verification has failed. Share the OTP sent to your phone to prevent your number from being disconnected.,1
+"Hello, this is your bank calling to confirm your appointment at the branch tomorrow.",0
+We are calling from the bank to inform you that your new debit card is ready for collection.,0
+Your bank statement is available. You can download it from the official banking application.,0
+We are calling to confirm the date and time of your scheduled bank appointment.,0
+Your bank has sent an OTP to your registered phone. Enter it yourself in the official banking app to continue.,0
+An OTP has been sent to your mobile number. Enter the code on the official website to verify your login.,0
+Please use the OTP sent to your phone to complete your online banking login.,0
+Your OTP is required to confirm your login. Enter it in the banking application.,0
+We have sent a verification OTP to your registered mobile number. Enter it on the official website.,0
+Use the OTP you received to confirm your appointment through our official application.,0
+An OTP has been sent to verify your phone number. Enter it in the app to continue.,0
+Please enter the OTP received on your registered number to complete the signup process.,0
+Your OTP will expire shortly. Enter it on the official payment page to continue.,0
+We sent an OTP to confirm your email address. Enter the code in the application.,0
+Enter the OTP sent to your phone to confirm your delivery address.,0
+Your OTP is required to verify your identity on the official customer portal.,0
+Please enter the one-time password on the official website to complete your account verification.,0
+An OTP has been sent to confirm your password reset. Enter it yourself on the official website.,0
+Use the OTP from your phone to complete the secure login process.,0
+Your bank has sent an OTP for login verification. Please enter it in the banking app.,0
+Enter the OTP received on your registered number to confirm the transaction.,0
+A verification code has been sent to your phone. Enter it on the official application.,0
+Please use the OTP to verify your mobile number during registration.,0
+The OTP is required to confirm your appointment booking. Enter it in the official app.,0
+"Hello, I am calling from the delivery service. Your package will arrive tomorrow afternoon.",0
+Your delivery driver is nearby and will reach your address in approximately ten minutes.,0
+We are calling to confirm your delivery address for the package you ordered.,0
+Your package has been shipped and is expected to arrive on Friday.,0
+"Hello, this is a reminder that you have a doctor's appointment tomorrow at 10 AM.",0
+We are calling to confirm your appointment for next Monday.,0
+Your service appointment has been scheduled for Thursday afternoon.,0
+This is a reminder about your scheduled meeting at 3 PM tomorrow.,0
+"Hello, we are calling to follow up on your recent customer service request.",0
+Your support ticket has been updated and our team will contact you shortly.,0
+We are calling to confirm that your replacement product has been shipped.,0
+Your refund has been processed and should appear in your account shortly.,0
+"Hello, we are calling regarding your job application. Are you available for an interview tomorrow?",0
+Your interview has been scheduled for Monday at 11 AM.,0
+We received your application and would like to discuss the position with you.,0
+We are calling to confirm your availability for the interview next week.,0

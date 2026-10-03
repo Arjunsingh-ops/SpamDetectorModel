@@ -345,7 +345,3 @@ $$\mathbf{12/12\text{ Tests Passed Cleanly (100\% Success)}}$$
 - **TRAI & DPDP Act Alignment**: Full call audit trails and human-in-the-loop review queue for suspected numbers.
 
 ---
-
-## 📜 License
-
-This project is licensed under the MIT License.

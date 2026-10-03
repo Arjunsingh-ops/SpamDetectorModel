@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from translate import translate_to_english
 import joblib
 import pandas as pd
+import csv
 
 app = FastAPI()
 app.add_middleware(
@@ -104,6 +105,18 @@ def get_spam_reason(text):
         return " ".join(reasons)
 
     return "The conversation contains patterns associated with spam or scam calls."
+
+@app.get("/flagged-numbers")
+def get_flagged_numbers():
+    numbers = []
+
+    with open("spam_numbers.csv", "r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+
+        for row in reader:
+            numbers.append(row)
+
+    return {"numbers": numbers}
 
 @app.post("/predict")
 def predict(data: CallData):

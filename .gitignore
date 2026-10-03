@@ -1,20 +1,25 @@
 # Environment & Secrets
 .env
 .env.local
+.env.*
 .env.*.local
 *.pem
 *.key
 
-# Python
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+
+# Virtual environment
 .venv/
 env/
 venv/
 ENV/
+
+# Python packaging
 build/
 develop-eggs/
 dist/
@@ -55,3 +60,10 @@ postgres_data/
 Thumbs.db
 *.swp
 *.swo
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log

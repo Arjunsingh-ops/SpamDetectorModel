@@ -1,7 +1,6 @@
 """Pydantic Schemas for Advanced Analytics and Telemetry API."""
 
-from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from pydantic import BaseModel, Field
 
 

@@ -3,9 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '@/components/layout/header';
 import { CallTable } from '@/components/calls/call-table';
-import { fetchCalls, FetchCallsParams, PaginatedCallsResult } from '@/lib/api';
-import { CallRecord } from '@/types';
-import { FileSpreadsheet, Filter, ChevronLeft, ChevronRight, Search, RefreshCw } from 'lucide-react';
+import { fetchCalls, PaginatedCallsResult } from '@/lib/api';
+import { FileSpreadsheet, Filter, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 interface PageProps {
@@ -83,58 +82,56 @@ export default function CallHistoryPage({ onOpenMobileNav }: PageProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="flex-1 flex flex-col min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)]">
       <Header
         title="Call History & Transcripts Audit"
         subtitle="Complete chronological audit trail of all screened calls, intent summaries, and routing dispositions."
         onOpenMobileNav={onOpenMobileNav}
       />
 
-      <main className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
+      <main className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-4">
         {/* Export & Filter Toolbar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800">
+        <div className="card-panel p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-bold text-white tracking-tight">Enterprise Call Log Audit</h2>
-            <p className="text-xs text-zinc-400">Server-side paginated call records. Total available: {paginatedData.total}</p>
+            <h2 className="text-sm font-semibold text-[var(--text-primary)] tracking-tight">Enterprise Call Log Audit</h2>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">Server-side paginated call records. Total available: {paginatedData.total}</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={exportCSV}
               disabled={!canExport}
-              className="px-4 py-2 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-zinc-700 text-zinc-200 text-xs font-semibold inline-flex items-center gap-2 transition-colors disabled:opacity-50"
+              className="btn-secondary text-xs inline-flex items-center gap-1.5 disabled:opacity-50"
               title="Export filtered records to CSV"
             >
-              <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-[var(--status-success)]" />
               Export Audit Log (CSV)
             </button>
           </div>
         </div>
 
         {/* Server-Side Filtering Control Strip */}
-        <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800 text-xs">
+        <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 card-panel p-3.5 text-xs">
           <div>
-            <label className="text-zinc-400 block mb-1">Search Caller / Intent</label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search number or intent..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              />
-            </div>
+            <label className="text-[var(--text-muted)] block mb-1">Search Caller / Intent</label>
+            <input
+              type="text"
+              placeholder="Search number or intent..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input-control w-full text-xs"
+            />
           </div>
 
           <div>
-            <label className="text-zinc-400 block mb-1">Call Session Status</label>
+            <label className="text-[var(--text-muted)] block mb-1">Call Session Status</label>
             <select
               value={status}
               onChange={(e) => {
                 setStatus(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="input-control w-full text-xs"
             >
               <option value="all">All Statuses</option>
               <option value="COMPLETED">Completed</option>
@@ -145,14 +142,14 @@ export default function CallHistoryPage({ onOpenMobileNav }: PageProps) {
           </div>
 
           <div>
-            <label className="text-zinc-400 block mb-1">Fraud Shield Disposition</label>
+            <label className="text-[var(--text-muted)] block mb-1">Fraud Shield Disposition</label>
             <select
               value={disposition}
               onChange={(e) => {
                 setDisposition(e.target.value);
                 setPage(1);
               }}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="input-control w-full text-xs"
             >
               <option value="all">All Dispositions</option>
               <option value="legitimate">Legitimate</option>
@@ -162,17 +159,17 @@ export default function CallHistoryPage({ onOpenMobileNav }: PageProps) {
           </div>
 
           <div>
-            <label className="text-zinc-400 block mb-1">Call Source Filter</label>
+            <label className="text-[var(--text-muted)] block mb-1">Call Source Filter</label>
             <button
               type="button"
               onClick={() => {
                 setRealOnly(!realOnly);
                 setPage(1);
               }}
-              className={`w-full py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-between transition-colors ${
+              className={`w-full py-1.5 px-2.5 rounded border text-xs font-medium flex items-center justify-between transition-colors ${
                 realOnly
-                  ? 'bg-indigo-950 border-indigo-700 text-indigo-200'
-                  : 'bg-zinc-950 border-zinc-800 text-zinc-300'
+                  ? 'bg-[var(--accent-primary-subtle)] border-[var(--accent-primary)] text-[var(--accent-primary)]'
+                  : 'bg-[var(--bg-surface-secondary)] border-[var(--border-color)] text-[var(--text-secondary)]'
               }`}
             >
               <span>{realOnly ? 'PSTN Real Only' : 'All (PSTN + Sim)'}</span>
@@ -183,7 +180,7 @@ export default function CallHistoryPage({ onOpenMobileNav }: PageProps) {
           <div className="flex items-end">
             <button
               type="submit"
-              className="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5"
+              className="btn-primary w-full text-xs py-1.5 flex items-center justify-center gap-1.5"
             >
               <Search className="w-3.5 h-3.5" />
               Apply Filters
@@ -195,26 +192,26 @@ export default function CallHistoryPage({ onOpenMobileNav }: PageProps) {
         <CallTable calls={paginatedData.items} title="All Recorded Call Sessions" showFilters={false} />
 
         {/* Server-Side Pagination Bar */}
-        <div className="flex items-center justify-between bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800 text-xs text-zinc-300">
+        <div className="flex items-center justify-between card-panel p-3 text-xs text-[var(--text-secondary)]">
           <div>
-            Page <span className="font-bold text-white">{paginatedData.page}</span> of{' '}
-            <span className="font-bold text-white">{paginatedData.pages}</span> ({paginatedData.total} total items)
+            Page <span className="font-semibold text-[var(--text-primary)]">{paginatedData.page}</span> of{' '}
+            <span className="font-semibold text-[var(--text-primary)]">{paginatedData.pages}</span> ({paginatedData.total} total items)
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-zinc-700 text-zinc-200 disabled:opacity-40 inline-flex items-center gap-1 transition-colors"
+              className="btn-secondary text-xs px-2.5 py-1 disabled:opacity-40 inline-flex items-center gap-1"
             >
-              <ChevronLeft className="w-4 h-4" /> Previous
+              <ChevronLeft className="w-3.5 h-3.5" /> Previous
             </button>
             <button
               onClick={() => setPage((p) => Math.min(paginatedData.pages, p + 1))}
               disabled={page >= paginatedData.pages}
-              className="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-zinc-700 text-zinc-200 disabled:opacity-40 inline-flex items-center gap-1 transition-colors"
+              className="btn-secondary text-xs px-2.5 py-1 disabled:opacity-40 inline-flex items-center gap-1"
             >
-              Next <ChevronRight className="w-4 h-4" />
+              Next <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>

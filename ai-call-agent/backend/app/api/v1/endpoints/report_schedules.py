@@ -1,6 +1,6 @@
 """REST Endpoints for Scheduled Report Management."""
 
-from typing import Optional, List
+from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, Path, status

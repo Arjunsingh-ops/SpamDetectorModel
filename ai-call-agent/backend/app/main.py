@@ -23,6 +23,12 @@ async def lifespan(app: FastAPI):
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION} [{settings.ENVIRONMENT}]")
     logger.info(f"Telephony Provider: {settings.TELEPHONY_PROVIDER} | Voice AI: {settings.VOICE_AI_PROVIDER}")
     logger.info(f"Configured CORS Origins: {settings.ALLOWED_ORIGINS}")
+    try:
+        from app.core.database import Base, engine
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables verified / initialized.")
+    except Exception as err:
+        logger.warning(f"Database schema initialization deferred: {err}")
     yield
     logger.info(f"Shutting down {settings.APP_NAME}")
 

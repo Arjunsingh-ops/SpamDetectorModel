@@ -46,6 +46,8 @@ yarn-error.log*
 *.sqlite3
 *.db
 storage/recordings/
+storage/reports/
+ai-call-agent/backend/storage/reports/
 postgres_data/
 
 # OS Specific

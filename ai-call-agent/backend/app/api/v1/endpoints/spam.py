@@ -1,5 +1,6 @@
 """Comprehensive Spam & Fraud Risk REST API Endpoints."""
 
+from typing import List
 from uuid import UUID
 from fastapi import APIRouter, Depends, Path, HTTPException
 from sqlalchemy.orm import Session
@@ -170,6 +171,30 @@ def add_to_allowlist(
         entry.reason = payload.reason
     db.commit()
     return {"status": "success", "phone_number": norm, "list_type": "allowlist"}
+
+
+@router.post("/allowlist/bulk")
+def bulk_add_to_allowlist(
+    items: List[AllowlistBlocklistRequest],
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Bulk import list of mobile numbers into saved contact allowlist."""
+    processed = []
+    for payload in items:
+        norm = local_reputation_provider.normalize_e164(payload.phone_number)
+        entry = db.query(SpamAllowlistBlocklist).filter(SpamAllowlistBlocklist.phone_number == norm).first()
+        if not entry:
+            user_id = current_user.id if current_user else None
+            entry = SpamAllowlistBlocklist(phone_number=norm, list_type="allowlist", reason=payload.reason or "Saved Contact Bulk Import", added_by_user_id=user_id)
+            db.add(entry)
+        else:
+            entry.list_type = "allowlist"
+            if payload.reason:
+                entry.reason = payload.reason
+        processed.append(norm)
+    db.commit()
+    return {"status": "success", "count": len(processed), "phone_numbers": processed}
 
 
 @router.post("/blocklist")

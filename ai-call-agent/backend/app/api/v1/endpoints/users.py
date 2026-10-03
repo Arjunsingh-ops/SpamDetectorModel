@@ -1,6 +1,6 @@
-from typing import Optional, List
+from typing import Optional
 from uuid import UUID
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from fastapi import APIRouter, Depends, Path, Query, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db

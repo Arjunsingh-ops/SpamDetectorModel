@@ -89,3 +89,20 @@ def test_deterministic_routing_policy_spam_integration():
     )
     assert uncertain_res["action"] == "screen_further"
     assert uncertain_res["allow_transfer"] is False
+
+
+def test_saved_contact_direct_forwarding():
+    """Verify saved contacts (allowlist) bypass screening and trigger immediate direct forwarding."""
+    intent = CallerIntent(purpose="Personal call", requested_department="General")
+    
+    # Allowlisted contact (score 0, LOW risk) -> Immediate direct forwarding
+    legit_res = deterministic_routing_policy.evaluate_routing(
+        db=None,
+        intent=intent,
+        spam_score=0,
+        risk_category="LOW",
+        allowlisted=True,
+    )
+    assert legit_res["action"] == "immediate_transfer"
+    assert legit_res["allow_transfer"] is True
+

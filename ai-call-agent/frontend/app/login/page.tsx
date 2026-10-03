@@ -4,9 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { UserRole } from '@/types';
-import { ShieldCheck, UserCheck, Eye, Lock, ArrowRight, KeyRound, Mail } from 'lucide-react';
+import { ShieldCheck, UserCheck, Eye, Lock, KeyRound, Mail } from 'lucide-react';
 import { Header } from '@/components/layout/header';
-import { Badge } from '@/components/ui/badge';
 
 interface PageProps {
   onOpenMobileNav?: () => void;
@@ -14,7 +13,7 @@ interface PageProps {
 
 export default function LoginPage({ onOpenMobileNav }: PageProps) {
   const router = useRouter();
-  const { user, loginWithCredentials, loginAsRole, logout } = useAuth();
+  const { loginWithCredentials, loginAsRole } = useAuth();
 
   const [email, setEmail] = useState('admin@aicallagent.internal');
   const [password, setPassword] = useState('admin123');
@@ -40,102 +39,102 @@ export default function LoginPage({ onOpenMobileNav }: PageProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="flex-1 flex flex-col min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)]">
       <Header
         title="Authentication & Session Control"
         subtitle="Enterprise JWT authentication and role-based access control (RBAC)."
         onOpenMobileNav={onOpenMobileNav}
       />
 
-      <main className="p-4 sm:p-6 max-w-xl w-full mx-auto space-y-6 my-auto">
-        <div className="p-6 sm:p-8 rounded-3xl bg-zinc-900/90 border border-zinc-800 backdrop-blur-2xl shadow-2xl space-y-6 text-xs">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center mx-auto border border-indigo-500/30">
-            <Lock className="w-6 h-6" />
+      <main className="p-4 sm:p-6 max-w-lg w-full mx-auto space-y-5 my-auto">
+        <div className="card-panel p-6 sm:p-8 space-y-5 text-xs shadow-lg">
+          <div className="w-10 h-10 rounded bg-[var(--accent-primary-subtle)] text-[var(--accent-primary)] flex items-center justify-center mx-auto border border-[var(--border-color)]">
+            <Lock className="w-5 h-5" />
           </div>
 
-          <div className="text-center">
-            <h2 className="text-lg font-bold text-white tracking-tight">Enterprise Operator Sign In</h2>
-            <p className="text-zinc-400 mt-1 max-w-sm mx-auto">
-              Sign in with corporate JWT credentials or choose a quick role persona below.
+          <div className="text-center space-y-1">
+            <h2 className="text-base font-semibold text-[var(--text-primary)] tracking-tight">Enterprise Operator Sign In</h2>
+            <p className="text-[var(--text-muted)] max-w-sm mx-auto">
+              Sign in with corporate credentials or choose a quick role persona below.
             </p>
           </div>
 
           {/* Credentials Form */}
           <form onSubmit={handleCredentialsSubmit} className="space-y-3">
             <div>
-              <label className="text-zinc-400 font-medium block mb-1">Corporate Email</label>
+              <label className="text-[var(--text-muted)] font-medium block mb-1">Corporate Email</label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="input-control w-full pl-9"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-zinc-400 font-medium block mb-1">Password</label>
+              <label className="text-[var(--text-muted)] font-medium block mb-1">Password</label>
               <div className="relative">
-                <KeyRound className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <KeyRound className="w-4 h-4 text-[var(--text-muted)] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-9 pr-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="input-control w-full pl-9"
                 />
               </div>
             </div>
 
             {errorMsg && (
-              <p className="text-rose-400 text-[11px] font-semibold">{errorMsg}</p>
+              <p className="text-[var(--status-danger)] text-[11px] font-medium">{errorMsg}</p>
             )}
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-500/20 transition-all"
+              className="btn-primary w-full py-2"
             >
-              {isSubmitting ? 'Authenticating...' : 'Sign In With JWT'}
+              {isSubmitting ? 'Authenticating...' : 'Sign In With Credentials'}
             </button>
           </form>
 
-          <div className="relative flex py-2 items-center">
-            <div className="flex-grow border-t border-zinc-800"></div>
-            <span className="flex-shrink mx-4 text-zinc-500 text-[10px] font-mono">OR QUICK SIMULATOR ROLE</span>
-            <div className="flex-grow border-t border-zinc-800"></div>
+          <div className="relative flex py-1 items-center">
+            <div className="flex-grow border-t border-[var(--border-color)]"></div>
+            <span className="flex-shrink mx-3 text-[var(--text-muted)] text-[10px] font-mono uppercase">QUICK SIMULATOR ROLE</span>
+            <div className="flex-grow border-t border-[var(--border-color)]"></div>
           </div>
 
           {/* Quick Role Selection */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <button
               onClick={() => handleSelectRole('admin')}
-              className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-indigo-600 hover:bg-indigo-950/20 transition-all text-left group"
+              className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] hover:border-[var(--border-color-hover)] transition-colors text-left"
             >
-              <ShieldCheck className="w-4 h-4 text-indigo-400 mb-1" />
-              <h4 className="font-bold text-white text-xs">Administrator</h4>
-              <p className="text-[10px] text-zinc-400 mt-0.5">Full access & settings</p>
+              <ShieldCheck className="w-4 h-4 text-[var(--accent-primary)] mb-1" />
+              <h4 className="font-semibold text-[var(--text-primary)] text-xs">Admin</h4>
+              <p className="text-[10px] text-[var(--text-muted)] mt-0.5">Full configuration</p>
             </button>
 
             <button
               onClick={() => handleSelectRole('receptionist')}
-              className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-emerald-600 hover:bg-emerald-950/20 transition-all text-left group"
+              className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] hover:border-[var(--border-color-hover)] transition-colors text-left"
             >
-              <UserCheck className="w-4 h-4 text-emerald-400 mb-1" />
-              <h4 className="font-bold text-white text-xs">Receptionist</h4>
-              <p className="text-[10px] text-zinc-400 mt-0.5">Calls & transfers</p>
+              <UserCheck className="w-4 h-4 text-[var(--status-success)] mb-1" />
+              <h4 className="font-semibold text-[var(--text-primary)] text-xs">Receptionist</h4>
+              <p className="text-[10px] text-[var(--text-muted)] mt-0.5">Calls & transfers</p>
             </button>
 
             <button
               onClick={() => handleSelectRole('viewer')}
-              className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-sky-600 hover:bg-sky-950/20 transition-all text-left group"
+              className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] hover:border-[var(--border-color-hover)] transition-colors text-left"
             >
-              <Eye className="w-4 h-4 text-sky-400 mb-1" />
-              <h4 className="font-bold text-white text-xs">Auditor</h4>
-              <p className="text-[10px] text-zinc-400 mt-0.5">Read-only metrics</p>
+              <Eye className="w-4 h-4 text-[var(--status-info)] mb-1" />
+              <h4 className="font-semibold text-[var(--text-primary)] text-xs">Auditor</h4>
+              <p className="text-[10px] text-[var(--text-muted)] mt-0.5">Read-only metrics</p>
             </button>
           </div>
         </div>

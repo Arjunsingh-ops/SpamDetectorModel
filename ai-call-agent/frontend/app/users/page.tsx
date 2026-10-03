@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/header';
-import { UserPlus, ShieldCheck, UserCheck, Eye, Trash2, Lock, RefreshCw } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { UserPlus, ShieldCheck, UserCheck, Eye, Trash2, Lock } from 'lucide-react';
 import { fetchUsersApi, createUserApi, deactivateUserApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth-context';
 
@@ -12,7 +11,7 @@ interface PageProps {
 }
 
 export default function UserManagementPage({ onOpenMobileNav }: PageProps) {
-  const { hasPermission, role } = useAuth();
+  const { role } = useAuth();
   const isAdmin = role === 'admin';
 
   const [users, setUsers] = useState<any[]>([]);
@@ -58,27 +57,27 @@ export default function UserManagementPage({ onOpenMobileNav }: PageProps) {
   };
 
   const getRoleBadge = (r: string) => {
-    if (r === 'admin') return <Badge variant="destructive"><ShieldCheck className="w-3 h-3" /> Admin</Badge>;
-    if (r === 'operator') return <Badge variant="info"><UserCheck className="w-3 h-3" /> Operator</Badge>;
-    if (r === 'receptionist') return <Badge variant="success"><UserCheck className="w-3 h-3" /> Receptionist</Badge>;
-    return <Badge variant="outline"><Eye className="w-3 h-3" /> Auditor</Badge>;
+    if (r === 'admin') return <span className="px-2 py-0.5 rounded-full bg-[var(--status-danger-bg)] text-[var(--status-danger)] border border-[var(--status-danger)]/30 text-[10px] font-semibold uppercase">Admin</span>;
+    if (r === 'operator') return <span className="px-2 py-0.5 rounded-full bg-[var(--accent-primary-subtle)] text-[var(--accent-primary)] border border-[var(--accent-primary)]/30 text-[10px] font-semibold uppercase">Operator</span>;
+    if (r === 'receptionist') return <span className="px-2 py-0.5 rounded-full bg-[var(--status-success-bg)] text-[var(--status-success)] border border-[var(--status-success)]/30 text-[10px] font-semibold uppercase">Receptionist</span>;
+    return <span className="px-2 py-0.5 rounded-full bg-[var(--bg-surface-secondary)] text-[var(--text-muted)] border border-[var(--border-color)] text-[10px] font-semibold uppercase">Auditor</span>;
   };
 
   if (!isAdmin) {
     return (
-      <div className="flex-1 flex flex-col min-h-screen bg-zinc-950 text-zinc-100">
+      <div className="flex-1 flex flex-col min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] transition-colors">
         <Header title="User Access Control" onOpenMobileNav={onOpenMobileNav} />
         <main className="p-12 max-w-xl mx-auto text-center space-y-3">
-          <Lock className="w-12 h-12 text-rose-500 mx-auto" />
-          <h3 className="text-lg font-bold text-white">Access Forbidden</h3>
-          <p className="text-xs text-zinc-400">User access management is restricted strictly to Administrator role accounts.</p>
+          <Lock className="w-12 h-12 text-[var(--status-danger)] mx-auto" />
+          <h3 className="text-base font-semibold text-[var(--text-primary)]">Access Forbidden</h3>
+          <p className="text-xs text-[var(--text-muted)]">User access management is restricted strictly to Administrator role accounts.</p>
         </main>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="flex-1 flex flex-col min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] transition-colors">
       <Header
         title="Enterprise User Access & Role Management"
         subtitle="Provision employee accounts, assign granular RBAC roles, and manage system operators."
@@ -86,25 +85,25 @@ export default function UserManagementPage({ onOpenMobileNav }: PageProps) {
       />
 
       <main className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[var(--bg-surface)] p-4 rounded-xl border border-[var(--border-color)] shadow-xs">
           <div>
-            <h2 className="text-base font-bold text-white tracking-tight">Organization Access Roster</h2>
-            <p className="text-xs text-zinc-400">Total provisioned operators: {users.length}</p>
+            <h2 className="text-sm font-semibold text-[var(--text-primary)] tracking-tight">Organization Access Roster</h2>
+            <p className="text-xs text-[var(--text-muted)]">Total provisioned operators: {users.length}</p>
           </div>
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold inline-flex items-center gap-2 transition-colors shadow-lg shadow-indigo-500/20"
+            className="px-3 py-1.5 rounded-md bg-[var(--accent-primary)] hover:opacity-90 text-white text-xs font-medium inline-flex items-center gap-2 transition-colors shadow-sm"
           >
-            <UserPlus className="w-4 h-4" />
+            <UserPlus className="w-3.5 h-3.5" />
             Provision Operator Account
           </button>
         </div>
 
         {/* Users Roster Table */}
-        <div className="rounded-2xl bg-zinc-900/80 border border-zinc-800 overflow-hidden backdrop-blur-xl">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-zinc-950/60 border-b border-zinc-800 text-zinc-400 font-medium">
+        <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] overflow-hidden shadow-xs">
+          <table className="w-full text-left text-xs text-[var(--text-secondary)]">
+            <thead className="bg-[var(--bg-surface-secondary)] text-[11px] font-semibold uppercase text-[var(--text-muted)] border-b border-[var(--border-color)]">
               <tr>
                 <th className="px-5 py-3">Employee Name</th>
                 <th className="px-4 py-3">Corporate Email</th>
@@ -114,30 +113,30 @@ export default function UserManagementPage({ onOpenMobileNav }: PageProps) {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/60">
+            <tbody className="divide-y divide-[var(--border-color)]">
               {users.map((u) => (
-                <tr key={u.id} className="hover:bg-zinc-800/30 transition-colors">
-                  <td className="px-5 py-3.5 font-semibold text-white">{u.fullName}</td>
-                  <td className="px-4 py-3.5 font-mono text-zinc-300">{u.email}</td>
+                <tr key={u.id} className="hover:bg-[var(--bg-app)] transition-colors">
+                  <td className="px-5 py-3.5 font-medium text-[var(--text-primary)]">{u.fullName}</td>
+                  <td className="px-4 py-3.5 font-mono text-[var(--text-secondary)]">{u.email}</td>
                   <td className="px-4 py-3.5">{getRoleBadge(u.role)}</td>
                   <td className="px-4 py-3.5">
                     <span
                       className={`inline-flex items-center gap-1.5 text-[11px] font-semibold ${
-                        u.isActive !== false ? 'text-emerald-400' : 'text-rose-400'
+                        u.isActive !== false ? 'text-[var(--status-success)]' : 'text-[var(--status-danger)]'
                       }`}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${u.isActive !== false ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${u.isActive !== false ? 'bg-[var(--status-success)]' : 'bg-[var(--status-danger)]'}`} />
                       {u.isActive !== false ? 'Active' : 'Deactivated'}
                     </span>
                   </td>
-                  <td className="px-4 py-3.5 font-mono text-zinc-400">
+                  <td className="px-4 py-3.5 font-mono text-[var(--text-muted)]">
                     {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'System Default'}
                   </td>
                   <td className="px-4 py-3.5 text-right">
                     {u.role !== 'admin' && (
                       <button
                         onClick={() => handleDeactivate(u.id)}
-                        className="p-1.5 rounded-xl bg-zinc-800 hover:bg-rose-950/60 text-zinc-400 hover:text-rose-300 transition-colors"
+                        className="p-1.5 rounded-md hover:bg-[var(--status-danger-bg)] text-[var(--text-muted)] hover:text-[var(--status-danger)] transition-colors"
                         title="Deactivate Account"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -152,17 +151,17 @@ export default function UserManagementPage({ onOpenMobileNav }: PageProps) {
 
         {/* Provision Modal */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
             <form
               onSubmit={handleAddUser}
-              className="w-full max-w-md rounded-2xl bg-zinc-900 border border-zinc-800 p-6 shadow-2xl space-y-4 text-xs"
+              className="w-full max-w-md rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] p-6 shadow-2xl space-y-4 text-xs"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-                <h4 className="text-sm font-bold text-white">Provision New Operator</h4>
+              <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+                <h4 className="text-sm font-semibold text-[var(--text-primary)]">Provision New Operator</h4>
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="text-zinc-400 hover:text-white"
+                  className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 >
                   ✕
                 </button>
@@ -170,35 +169,35 @@ export default function UserManagementPage({ onOpenMobileNav }: PageProps) {
 
               <div className="space-y-3">
                 <div>
-                  <label className="block text-zinc-400 mb-1">Full Name</label>
+                  <label className="block text-[var(--text-secondary)] font-medium mb-1">Full Name</label>
                   <input
                     type="text"
                     required
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     placeholder="e.g. Vikramaditya Singh"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-md px-3 py-1.5 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 mb-1">Corporate Email</label>
+                  <label className="block text-[var(--text-secondary)] font-medium mb-1">Corporate Email</label>
                   <input
                     type="email"
                     required
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
                     placeholder="operator@aicallagent.internal"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-md px-3 py-1.5 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-zinc-400 mb-1">Role Allocation</label>
+                  <label className="block text-[var(--text-secondary)] font-medium mb-1">Role Allocation</label>
                   <select
                     value={newRole}
                     onChange={(e) => setNewRole(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-md px-3 py-1.5 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                   >
                     <option value="receptionist">Receptionist (Live Calls & Review)</option>
                     <option value="operator">Operator (Routing & Forwarding)</option>
@@ -208,17 +207,17 @@ export default function UserManagementPage({ onOpenMobileNav }: PageProps) {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-zinc-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[var(--border-color)]">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-xl bg-zinc-800 text-zinc-300 font-semibold"
+                  className="px-3 py-1.5 rounded-md bg-[var(--bg-surface-secondary)] text-[var(--text-secondary)] font-medium hover:bg-[var(--border-color)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold"
+                  className="px-3 py-1.5 rounded-md bg-[var(--accent-primary)] hover:opacity-90 text-white font-medium shadow-sm"
                 >
                   Provision User
                 </button>
@@ -230,3 +229,4 @@ export default function UserManagementPage({ onOpenMobileNav }: PageProps) {
     </div>
   );
 }
+

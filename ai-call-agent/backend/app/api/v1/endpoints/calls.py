@@ -12,7 +12,6 @@ from app.models.user import User
 from app.schemas.common import PaginatedResponse
 from app.schemas.call import (
     CallResponse,
-    WebhookActionResponse,
 )
 
 router = APIRouter(tags=["Calls & Telephony"])
@@ -138,7 +137,6 @@ def get_call_conversation(
 
 @router.post(
     "/telephony/webhook",
-    response_model=WebhookActionResponse,
     status_code=status.HTTP_200_OK,
     summary="Carrier Telephony Ingress Webhook",
     description="Carrier ingress hook invoked upon incoming PSTN call. Returns stream URL and bilingual greeting.",
@@ -159,4 +157,9 @@ async def telephony_inbound_webhook(
 
     service = CallService(db)
     result = service.process_inbound_call(payload)
+
+    if isinstance(result, str):
+        from fastapi import Response
+        return Response(content=result, media_type="application/xml")
+
     return result

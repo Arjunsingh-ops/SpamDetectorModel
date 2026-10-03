@@ -98,3 +98,23 @@ def test_human_spam_review_policy():
     assert decision_spam["status"] == "success"
     assert decision_spam["reported_to_authority"] is True
     assert decision_spam["authority_reference_id"].startswith("TRAI-REPORT-")
+
+
+def test_ml_spam_detection_adapter():
+    from app.integrations.spam.ml_engine import MLSpamDetectionAdapter
+    ml_adapter = MLSpamDetectionAdapter()
+
+    # Clean conversation (using phone number not in spam DB)
+    clean_eval = ml_adapter.evaluate_call("+919999111222", "Hello, I am calling to schedule an appointment for tomorrow.")
+    assert clean_eval["classification"] == "legitimate"
+
+
+    # Known spam CSV / keyword fraud call
+    fraud_eval = ml_adapter.evaluate_call(
+        "+911409988776",
+        "Your bank account will be blocked today. Please tell me the OTP you received."
+    )
+    assert fraud_eval["classification"] in ["spam", "uncertain"]
+    assert fraud_eval["composite_score"] >= 40
+    assert "otp" in fraud_eval["detected_triggers"] or "ml_" in fraud_eval["detected_triggers"]
+

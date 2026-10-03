@@ -7,7 +7,6 @@ import csv
 import io
 import os
 from typing import List, Any, Optional
-from sqlalchemy.orm import Session
 from app.models.call import Call
 
 

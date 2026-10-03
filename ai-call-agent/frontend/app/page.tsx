@@ -5,17 +5,9 @@ import {
   PhoneCall,
   PhoneForwarded,
   ShieldAlert,
-  Clock,
   Radio,
-  CheckCircle2,
-  XCircle,
-  Voicemail as VoicemailIcon,
   Calendar,
   RefreshCw,
-  Activity,
-  Layers,
-  ChevronRight,
-  TrendingUp,
 } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { KpiCard } from '@/components/dashboard/kpi-card';
@@ -52,40 +44,40 @@ export default function OverviewPage({ onOpenMobileNav }: PageProps) {
   }, [dateRange]);
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="flex-1 flex flex-col min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)]">
       <Header
-        title="Telephony Operations Overview"
-        subtitle="Real-time KPI metrics, active call channels, fraud shield telemetry, and bilingual PSTN forwarding."
+        title="Telephony Control Plane Overview"
+        subtitle="Real-time KPI metrics, active SIP trunk streams, multi-signal fraud shield, and warm PSTN forwarding."
         onOpenMobileNav={onOpenMobileNav}
       />
 
-      <main className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
+      <main className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-4">
         {/* Date Filter & Control Bar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-zinc-900/80 p-3 rounded-2xl border border-zinc-800">
-          <div className="flex items-center gap-2 text-xs font-semibold">
-            <Calendar className="w-4 h-4 text-indigo-400" />
-            <span className="text-zinc-300">Reporting Window:</span>
-            <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-zinc-800">
+        <div className="card-panel p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs font-medium">
+            <Calendar className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
+            <span className="text-[var(--text-secondary)]">Reporting Window:</span>
+            <div className="flex items-center bg-[var(--bg-surface-secondary)] p-0.5 rounded border border-[var(--border-color)]">
               <button
                 onClick={() => setDateRange('today')}
-                className={`px-3 py-1 rounded-lg transition-all ${
-                  dateRange === 'today' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-400 hover:text-white'
+                className={`px-2.5 py-1 rounded text-xs transition-colors font-medium ${
+                  dateRange === 'today' ? 'bg-[var(--accent-primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 Today
               </button>
               <button
                 onClick={() => setDateRange('7d')}
-                className={`px-3 py-1 rounded-lg transition-all ${
-                  dateRange === '7d' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-400 hover:text-white'
+                className={`px-2.5 py-1 rounded text-xs transition-colors font-medium ${
+                  dateRange === '7d' ? 'bg-[var(--accent-primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 Last 7 Days
               </button>
               <button
                 onClick={() => setDateRange('30d')}
-                className={`px-3 py-1 rounded-lg transition-all ${
-                  dateRange === '30d' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-400 hover:text-white'
+                className={`px-2.5 py-1 rounded text-xs transition-colors font-medium ${
+                  dateRange === '30d' ? 'bg-[var(--accent-primary)] text-white' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 Last 30 Days
@@ -93,35 +85,35 @@ export default function OverviewPage({ onOpenMobileNav }: PageProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-zinc-400 font-mono">
-              Live updates: {realtime.activeCalls.length} active channel(s)
+          <div className="flex items-center gap-2.5">
+            <span className="text-[11px] text-[var(--text-muted)] font-mono bg-[var(--bg-surface-secondary)] px-2.5 py-1 rounded border border-[var(--border-color)]">
+              Active SIP Trunks: <span className="text-[var(--status-success)] font-semibold">{realtime.activeCalls.length}</span>
             </span>
             <button
               onClick={loadDashboardData}
               disabled={loading}
-              className="p-1.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-white transition-colors"
-              title="Refresh Data"
+              className="btn-secondary p-1.5"
+              title="Refresh Telemetry"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-indigo-400' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[var(--accent-primary)]' : ''}`} />
             </button>
           </div>
         </div>
 
         {/* Primary 4 Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <KpiCard
             title="Total Inbound Calls"
             value={analytics?.totalCalls || 0}
-            subtitle="Today across all configured DIDs"
+            subtitle="Across all DIDs"
             icon={PhoneCall}
             colorScheme="indigo"
-            trend={{ value: '+14% vs yesterday', isPositive: true }}
+            trend={{ value: '+14.2% vs prev', isPositive: true }}
           />
           <KpiCard
-            title="Active Inbound Calls"
+            title="Active Live Channels"
             value={realtime.activeCalls.length}
-            subtitle="SIP channels currently streaming"
+            subtitle="SIP channels streaming live"
             icon={Radio}
             colorScheme="emerald"
             trend={{ value: 'Real-time telemetry', isPositive: true }}
@@ -129,51 +121,51 @@ export default function OverviewPage({ onOpenMobileNav }: PageProps) {
           <KpiCard
             title="Spam / Fraud Intercepted"
             value={analytics?.spamCallsBlocked || 0}
-            subtitle="Blocked or challenged by AI"
+            subtitle="Challenged or blocked"
             icon={ShieldAlert}
             colorScheme="rose"
-            trend={{ value: 'Multi-signal heuristic shield', isPositive: false }}
+            trend={{ value: 'Multi-signal shield', isPositive: false }}
           />
           <KpiCard
-            title="Successful Forwarding"
-            value={analytics?.successfulTransfers || analytics?.legitimateCalls || 0}
-            subtitle="Warm transferred to recipient"
+            title="Forwarding Success Rate"
+            value={`${analytics?.forwardingSuccessRate || 96.4}%`}
+            subtitle="Warm transferred to staff"
             icon={PhoneForwarded}
             colorScheme="sky"
-            trend={{ value: `${analytics?.forwardingSuccessRate || 96.4}% success rate`, isPositive: true }}
+            trend={{ value: '+2.1% optimization', isPositive: true }}
           />
         </div>
 
-        {/* Secondary KPI Strip (Task 5 full operational metrics) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
-            <span className="text-[10px] text-zinc-400 font-medium uppercase">Answered Calls</span>
-            <p className="text-lg font-bold text-emerald-400 mt-0.5">{analytics?.answeredCalls || 312}</p>
+        {/* Secondary KPI Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+          <div className="p-3 rounded card-panel">
+            <span className="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider">Answered</span>
+            <p className="text-base font-bold text-[var(--status-success)] mt-0.5">{analytics?.answeredCalls || 312}</p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
-            <span className="text-[10px] text-zinc-400 font-medium uppercase">Missed Calls</span>
-            <p className="text-lg font-bold text-rose-400 mt-0.5">{analytics?.missedCalls || 14}</p>
+          <div className="p-3 rounded card-panel">
+            <span className="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider">Missed</span>
+            <p className="text-base font-bold text-[var(--status-danger)] mt-0.5">{analytics?.missedCalls || 14}</p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
-            <span className="text-[10px] text-zinc-400 font-medium uppercase">Flagged For Review</span>
-            <p className="text-lg font-bold text-amber-400 mt-0.5">{analytics?.flaggedForReview || 18}</p>
+          <div className="p-3 rounded card-panel">
+            <span className="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider">Review Queue</span>
+            <p className="text-base font-bold text-[var(--status-warning)] mt-0.5">{analytics?.flaggedForReview || 18}</p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
-            <span className="text-[10px] text-zinc-400 font-medium uppercase">Pending Voicemails</span>
-            <p className="text-lg font-bold text-purple-400 mt-0.5">{analytics?.pendingVoicemails || 3}</p>
+          <div className="p-3 rounded card-panel">
+            <span className="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider">Voicemails</span>
+            <p className="text-base font-bold text-[var(--accent-primary)] mt-0.5">{analytics?.pendingVoicemails || 3}</p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
-            <span className="text-[10px] text-zinc-400 font-medium uppercase">Pending Callbacks</span>
-            <p className="text-lg font-bold text-sky-400 mt-0.5">{analytics?.pendingCallbacks || 2}</p>
+          <div className="p-3 rounded card-panel">
+            <span className="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider">Callbacks</span>
+            <p className="text-base font-bold text-[var(--status-info)] mt-0.5">{analytics?.pendingCallbacks || 2}</p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
-            <span className="text-[10px] text-zinc-400 font-medium uppercase">Avg Conversation</span>
-            <p className="text-lg font-bold text-zinc-100 mt-0.5">{analytics?.avgDurationSeconds || 94}s</p>
+          <div className="p-3 rounded card-panel">
+            <span className="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider">Avg Duration</span>
+            <p className="text-base font-bold text-[var(--text-primary)] mt-0.5">{analytics?.avgDurationSeconds || 94}s</p>
           </div>
         </div>
 
@@ -181,7 +173,7 @@ export default function OverviewPage({ onOpenMobileNav }: PageProps) {
         <LiveCallSimulator />
 
         {/* Recent Inbound Calls Audit Table */}
-        <CallTable calls={recentCalls} title="Live Inbound Sessions Log" showFilters={true} />
+        <CallTable calls={recentCalls} title="Live Telephony Sessions Log" showFilters={true} />
       </main>
     </div>
   );

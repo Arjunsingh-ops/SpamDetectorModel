@@ -1,7 +1,7 @@
 """REST Endpoints for Report Generation and Downloads."""
 
 import os
-from typing import Optional, List
+from typing import Optional
 from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel
@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.api.deps import RequireRole, get_current_user
+from app.api.deps import RequireRole
 from app.models.user import User
 from app.reports.service import ReportService
 

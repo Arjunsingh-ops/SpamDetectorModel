@@ -5,7 +5,6 @@ duplicate prevention, and email dispatch.
 """
 
 from datetime import datetime, timezone
-import json
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.core.logging import logger

@@ -3,21 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '@/components/layout/header';
 import {
-  BarChart3,
-  Activity,
   Server,
   Database,
   Radio,
   Sparkles,
-  Volume2,
-  Mic,
-  ShieldCheck,
   CheckCircle2,
   AlertTriangle,
-  XCircle,
   RefreshCw,
-  Clock,
-  PhoneCall,
 } from 'lucide-react';
 import { fetchAnalyticsOverview, fetchAnalyticsDaily, fetchSystemStatus, fetchHealth } from '@/lib/api';
 
@@ -77,27 +69,27 @@ export default function AnalyticsPage({ onOpenMobileNav }: PageProps) {
   const getStatusBadge = (status: 'healthy' | 'degraded' | 'unavailable' | 'not_configured') => {
     if (status === 'healthy') {
       return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">
+        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--status-success-bg)] text-[var(--status-success)] border border-[var(--status-success)]/30 text-[10px] font-semibold">
           <CheckCircle2 className="w-3 h-3" /> Operational Healthy
         </span>
       );
     }
     if (status === 'degraded') {
       return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold">
+        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--status-warning-bg)] text-[var(--status-warning)] border border-[var(--status-warning)]/30 text-[10px] font-semibold">
           <AlertTriangle className="w-3 h-3" /> Degraded Performance
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700 text-[10px] font-bold">
+      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[var(--bg-surface-secondary)] text-[var(--text-muted)] border border-[var(--border-color)] text-[10px] font-semibold">
         Standby / Simulation
       </span>
     );
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="flex-1 flex flex-col min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] transition-colors">
       <Header
         title="Operational Analytics & System Health Diagnostics"
         subtitle="Backend system telemetry, hourly call distribution, AI speech metrics, and infrastructure health."
@@ -106,122 +98,122 @@ export default function AnalyticsPage({ onOpenMobileNav }: PageProps) {
 
       <main className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
         {/* Refresh Header Bar */}
-        <div className="flex justify-between items-center bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800">
+        <div className="flex justify-between items-center bg-[var(--bg-surface)] p-4 rounded-xl border border-[var(--border-color)] shadow-xs">
           <div>
-            <h2 className="text-base font-bold text-white tracking-tight">System Health & Telemetry Metrics</h2>
-            <p className="text-xs text-zinc-400">Live backend diagnostics updated in real time.</p>
+            <h2 className="text-sm font-semibold text-[var(--text-primary)] tracking-tight">System Health & Telemetry Metrics</h2>
+            <p className="text-xs text-[var(--text-muted)]">Live backend diagnostics updated in real time.</p>
           </div>
           <button
             onClick={loadData}
             disabled={loading}
-            className="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs font-semibold inline-flex items-center gap-1.5 hover:text-white transition-colors"
+            className="px-3 py-1.5 rounded-md bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)] text-xs font-medium inline-flex items-center gap-1.5 hover:bg-[var(--border-color)] transition-colors"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-indigo-400' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[var(--accent-primary)]' : ''}`} />
             Refresh Telemetry
           </button>
         </div>
 
-        {/* Task 17: System Health Matrix */}
+        {/* System Health Matrix */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-          <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-2">
+          <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] space-y-2 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-white flex items-center gap-2">
-                <Server className="w-4 h-4 text-indigo-400" /> FastAPI Backend
+              <span className="font-semibold text-[var(--text-primary)] flex items-center gap-2">
+                <Server className="w-4 h-4 text-[var(--accent-primary)]" /> FastAPI Backend
               </span>
               {getStatusBadge('healthy')}
             </div>
-            <p className="text-[11px] text-zinc-400 font-mono">
+            <p className="text-[11px] text-[var(--text-muted)] font-mono">
               Version: {systemStatus?.version || '1.0.0-stage7'} [{systemStatus?.environment || 'development'}]
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-2">
+          <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] space-y-2 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-white flex items-center gap-2">
-                <Database className="w-4 h-4 text-emerald-400" /> Database Stack
+              <span className="font-semibold text-[var(--text-primary)] flex items-center gap-2">
+                <Database className="w-4 h-4 text-[var(--status-success)]" /> Database Stack
               </span>
               {getStatusBadge(systemStatus?.database?.connected ? 'healthy' : 'degraded')}
             </div>
-            <p className="text-[11px] text-zinc-400 font-mono">
+            <p className="text-[11px] text-[var(--text-muted)] font-mono">
               Dialect: {systemStatus?.database?.dialect || 'PostgreSQL'} | Latency: {systemStatus?.database?.latency_ms || 1.8} ms
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-2">
+          <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] space-y-2 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-white flex items-center gap-2">
-                <Radio className="w-4 h-4 text-sky-400" /> Telephony Carrier
+              <span className="font-semibold text-[var(--text-primary)] flex items-center gap-2">
+                <Radio className="w-4 h-4 text-[var(--accent-primary)]" /> Telephony Carrier
               </span>
               {getStatusBadge('healthy')}
             </div>
-            <p className="text-[11px] text-zinc-400 font-mono">
+            <p className="text-[11px] text-[var(--text-muted)] font-mono">
               Provider: {systemStatus?.adapters?.telephony?.provider || 'mock'} [{systemStatus?.adapters?.telephony?.mode || 'simulation'}]
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-2">
+          <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] space-y-2 shadow-xs">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-white flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400" /> Ollama / Voice AI
+              <span className="font-semibold text-[var(--text-primary)] flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[var(--status-warning)]" /> Ollama / Voice AI
               </span>
               {getStatusBadge('healthy')}
             </div>
-            <p className="text-[11px] text-zinc-400 font-mono">
+            <p className="text-[11px] text-[var(--text-muted)] font-mono">
               Mode: {systemStatus?.adapters?.voice_ai?.mode || 'bilingual_simulation'}
             </p>
           </div>
         </div>
 
-        {/* Task 16: Operational KPI Strips */}
+        {/* Operational KPI Strips */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800">
-            <span className="text-xs text-zinc-400 font-medium uppercase">Spam Intercept Rate</span>
+          <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-xs">
+            <span className="text-xs text-[var(--text-muted)] font-semibold uppercase">Spam Intercept Rate</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-3xl font-bold text-rose-400">{spamPct}%</span>
-              <span className="text-xs text-zinc-400">of total inbound volume</span>
+              <span className="text-2xl font-bold text-[var(--status-danger)]">{spamPct}%</span>
+              <span className="text-xs text-[var(--text-muted)]">of total volume</span>
             </div>
-            <div className="w-full bg-zinc-800 h-1.5 rounded-full mt-3 overflow-hidden">
-              <div className="bg-rose-500 h-full rounded-full" style={{ width: `${spamPct}%` }} />
+            <div className="w-full bg-[var(--bg-app)] h-1.5 rounded-full mt-3 overflow-hidden border border-[var(--border-color)]">
+              <div className="bg-[var(--status-danger)] h-full rounded-full" style={{ width: `${spamPct}%` }} />
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800">
-            <span className="text-xs text-zinc-400 font-medium uppercase">Forwarding Bridge Rate</span>
+          <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-xs">
+            <span className="text-xs text-[var(--text-muted)] font-semibold uppercase">Forwarding Bridge Rate</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-3xl font-bold text-emerald-400">{forwardingRate}%</span>
-              <span className="text-xs text-zinc-400">clean handoff</span>
+              <span className="text-2xl font-bold text-[var(--status-success)]">{forwardingRate}%</span>
+              <span className="text-xs text-[var(--text-muted)]">clean handoff</span>
             </div>
-            <div className="w-full bg-zinc-800 h-1.5 rounded-full mt-3 overflow-hidden">
-              <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${forwardingRate}%` }} />
+            <div className="w-full bg-[var(--bg-app)] h-1.5 rounded-full mt-3 overflow-hidden border border-[var(--border-color)]">
+              <div className="bg-[var(--status-success)] h-full rounded-full" style={{ width: `${forwardingRate}%` }} />
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800">
-            <span className="text-xs text-zinc-400 font-medium uppercase">Hindi & Hinglish Adoption</span>
+          <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-xs">
+            <span className="text-xs text-[var(--text-muted)] font-semibold uppercase">Hindi & Hinglish Adoption</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-3xl font-bold text-indigo-400">{hiPct + hinglishPct}%</span>
-              <span className="text-xs text-zinc-400">regional callers</span>
+              <span className="text-2xl font-bold text-[var(--accent-primary)]">{hiPct + hinglishPct}%</span>
+              <span className="text-xs text-[var(--text-muted)]">regional callers</span>
             </div>
-            <div className="w-full bg-zinc-800 h-1.5 rounded-full mt-3 overflow-hidden">
-              <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${hiPct + hinglishPct}%` }} />
+            <div className="w-full bg-[var(--bg-app)] h-1.5 rounded-full mt-3 overflow-hidden border border-[var(--border-color)]">
+              <div className="bg-[var(--accent-primary)] h-full rounded-full" style={{ width: `${hiPct + hinglishPct}%` }} />
             </div>
           </div>
         </div>
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800">
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+          <div className="lg:col-span-2 p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
               <div>
-                <h3 className="text-sm font-bold text-white">Inbound Call Volume Today (Hourly Distribution)</h3>
-                <p className="text-xs text-zinc-400">Comparison of legitimate calls vs blocked spam</p>
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Inbound Call Volume Today (Hourly Distribution)</h3>
+                <p className="text-xs text-[var(--text-muted)]">Comparison of legitimate calls vs blocked spam</p>
               </div>
               <div className="flex items-center gap-3 text-xs">
-                <span className="flex items-center gap-1.5 text-zinc-300">
-                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-500" /> Legitimate
+                <span className="flex items-center gap-1.5 text-[var(--text-secondary)]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[var(--accent-primary)]" /> Legitimate
                 </span>
-                <span className="flex items-center gap-1.5 text-zinc-300">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500" /> Spam
+                <span className="flex items-center gap-1.5 text-[var(--text-secondary)]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[var(--status-danger)]" /> Spam
                 </span>
               </div>
             </div>
@@ -238,16 +230,16 @@ export default function AnalyticsPage({ onOpenMobileNav }: PageProps) {
                       <div className="w-full flex items-end justify-center gap-1 h-44">
                         <div
                           style={{ height: `${legHeight}%` }}
-                          className="w-1/2 bg-indigo-600/80 hover:bg-indigo-500 rounded-t transition-all"
+                          className="w-1/2 bg-[var(--accent-primary)] rounded-t transition-all hover:opacity-80"
                           title={`Legitimate: ${item.legitimate}`}
                         />
                         <div
                           style={{ height: `${spamHeight}%` }}
-                          className="w-1/2 bg-rose-600/80 hover:bg-rose-500 rounded-t transition-all"
+                          className="w-1/2 bg-[var(--status-danger)] rounded-t transition-all hover:opacity-80"
                           title={`Spam: ${item.spam}`}
                         />
                       </div>
-                      <span className="text-[10px] text-zinc-400 font-mono">{item.hour}</span>
+                      <span className="text-[10px] text-[var(--text-muted)] font-mono">{item.hour}</span>
                     </div>
                   );
                 })}
@@ -255,45 +247,45 @@ export default function AnalyticsPage({ onOpenMobileNav }: PageProps) {
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800 flex flex-col justify-between space-y-4">
+          <div className="p-5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] flex flex-col justify-between space-y-4 shadow-xs">
             <div>
-              <h3 className="text-sm font-bold text-white">Language Distribution</h3>
-              <p className="text-xs text-zinc-400">Caller preferred speech dialect</p>
+              <h3 className="text-sm font-semibold text-[var(--text-primary)]">Language Distribution</h3>
+              <p className="text-xs text-[var(--text-muted)]">Caller preferred speech dialect</p>
 
               <div className="space-y-4 my-6 text-xs">
                 <div>
-                  <div className="flex justify-between text-zinc-300 mb-1">
+                  <div className="flex justify-between text-[var(--text-secondary)] mb-1">
                     <span>Indian English (en-IN)</span>
-                    <span className="font-semibold text-white">{enPct}% ({languages.english})</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{enPct}% ({languages.english})</span>
                   </div>
-                  <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
-                    <div className="bg-sky-500 h-full rounded-full" style={{ width: `${enPct}%` }} />
+                  <div className="w-full bg-[var(--bg-app)] h-2 rounded-full overflow-hidden border border-[var(--border-color)]">
+                    <div className="bg-[var(--accent-primary)] h-full rounded-full" style={{ width: `${enPct}%` }} />
                   </div>
                 </div>
 
                 <div>
-                  <div className="flex justify-between text-zinc-300 mb-1">
+                  <div className="flex justify-between text-[var(--text-secondary)] mb-1">
                     <span>Hindi (hi-IN)</span>
-                    <span className="font-semibold text-white">{hiPct}% ({languages.hindi})</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{hiPct}% ({languages.hindi})</span>
                   </div>
-                  <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
-                    <div className="bg-orange-500 h-full rounded-full" style={{ width: `${hiPct}%` }} />
+                  <div className="w-full bg-[var(--bg-app)] h-2 rounded-full overflow-hidden border border-[var(--border-color)]">
+                    <div className="bg-[var(--status-warning)] h-full rounded-full" style={{ width: `${hiPct}%` }} />
                   </div>
                 </div>
 
                 <div>
-                  <div className="flex justify-between text-zinc-300 mb-1">
+                  <div className="flex justify-between text-[var(--text-secondary)] mb-1">
                     <span>Colloquial Hinglish (Mixed)</span>
-                    <span className="font-semibold text-white">{hinglishPct}% ({languages.hinglish})</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{hinglishPct}% ({languages.hinglish})</span>
                   </div>
-                  <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
-                    <div className="bg-purple-500 h-full rounded-full" style={{ width: `${hinglishPct}%` }} />
+                  <div className="w-full bg-[var(--bg-app)] h-2 rounded-full overflow-hidden border border-[var(--border-color)]">
+                    <div className="bg-[var(--status-info)] h-full rounded-full" style={{ width: `${hinglishPct}%` }} />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-[11px] text-zinc-400">
+            <div className="p-3 rounded-md bg-[var(--bg-app)] border border-[var(--border-color)] text-[11px] text-[var(--text-muted)]">
               Bilingual detection switches within 1.5 seconds of initial caller audio frame.
             </div>
           </div>
@@ -302,3 +294,4 @@ export default function AnalyticsPage({ onOpenMobileNav }: PageProps) {
     </div>
   );
 }
+

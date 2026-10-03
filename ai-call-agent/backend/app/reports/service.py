@@ -6,7 +6,7 @@ Task 13: Report History Persistence, File Storage, and Status Lifecycle.
 import json
 import os
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 from uuid import UUID
 from sqlalchemy.orm import Session
 from app.analytics.aggregation import AnalyticsAggregationEngine

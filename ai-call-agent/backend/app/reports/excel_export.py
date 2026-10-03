@@ -5,7 +5,7 @@ Number Formatting, Frozen Header Rows, and Column Auto-Width.
 """
 
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -31,11 +31,10 @@ def generate_excel_report(
 
     # Styling definitions
     header_fill = PatternFill(start_color="3730A3", end_color="3730A3", fill_type="solid")  # Indigo-800
-    sub_header_fill = PatternFill(start_color="E0E7FF", end_color="E0E7FF", fill_type="solid")
     header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
-    bold_font = Font(name="Calibri", size=11, bold=True)
     title_font = Font(name="Calibri", size=16, bold=True, color="3730A3")
     regular_font = Font(name="Calibri", size=11)
+
 
     thin_border = Border(
         left=Side(style="thin", color="D4D4D8"),

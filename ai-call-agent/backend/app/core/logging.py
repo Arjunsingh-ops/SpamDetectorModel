@@ -14,6 +14,13 @@ def setup_logging() -> logging.Logger:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8")
+            sys.stderr.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(formatter)
     handler.setLevel(log_level)

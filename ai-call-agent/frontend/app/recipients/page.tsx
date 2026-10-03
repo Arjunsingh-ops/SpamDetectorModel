@@ -7,15 +7,12 @@ import {
   UserPlus,
   Edit2,
   Trash2,
-  Phone,
-  Clock,
-  ShieldCheck,
-  CheckCircle2,
-  X,
-  Sliders,
-  AlertCircle,
   Eye,
   EyeOff,
+  X,
+  CheckCircle2,
+  Clock,
+  ShieldCheck,
 } from 'lucide-react';
 import {
   fetchRecipients,
@@ -31,7 +28,7 @@ interface PageProps {
 }
 
 export default function RecipientsPage({ onOpenMobileNav }: PageProps) {
-  const { hasPermission, role } = useAuth();
+  const { hasPermission } = useAuth();
   const canManage = hasPermission('recipients_manage');
 
   const [recipients, setRecipients] = useState<any[]>([]);
@@ -143,7 +140,7 @@ export default function RecipientsPage({ onOpenMobileNav }: PageProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="flex-1 flex flex-col min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] transition-colors">
       <Header
         title="Recipient Directory & Forwarding Destinations"
         subtitle="Manage verified human operators, departments, backup routing policies, and operating hours."
@@ -152,27 +149,27 @@ export default function RecipientsPage({ onOpenMobileNav }: PageProps) {
 
       <main className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
         {/* Action Controls Bar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[var(--bg-surface)] p-4 rounded-xl border border-[var(--border-color)]">
           <div>
-            <h2 className="text-base font-bold text-white tracking-tight">Verified Routing Destinations</h2>
-            <p className="text-xs text-zinc-400">Total active E.164 forwarding endpoints: {recipients.length}</p>
+            <h2 className="text-sm font-semibold text-[var(--text-primary)] tracking-tight">Verified Routing Destinations</h2>
+            <p className="text-xs text-[var(--text-muted)]">Total active E.164 forwarding endpoints: {recipients.length}</p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => setHidePhoneNumbers(!hidePhoneNumbers)}
-              className="px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1.5 rounded-md bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)] text-xs font-medium inline-flex items-center gap-1.5 hover:bg-[var(--border-color)] transition-colors"
             >
-              {hidePhoneNumbers ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-amber-400" />}
+              {hidePhoneNumbers ? <Eye className="w-3.5 h-3.5 text-[var(--status-success)]" /> : <EyeOff className="w-3.5 h-3.5 text-[var(--status-warning)]" />}
               {hidePhoneNumbers ? 'Show Numbers' : 'Mask PSTN Numbers'}
             </button>
 
             {canManage && (
               <button
                 onClick={openAddModal}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold inline-flex items-center gap-2 shadow-lg shadow-indigo-500/20 transition-all"
+                className="px-3 py-1.5 rounded-md bg-[var(--accent-primary)] hover:opacity-90 text-white text-xs font-medium inline-flex items-center gap-2 transition-all shadow-sm"
               >
-                <UserPlus className="w-4 h-4" />
+                <UserPlus className="w-3.5 h-3.5" />
                 Add Recipient Profile
               </button>
             )}
@@ -180,102 +177,118 @@ export default function RecipientsPage({ onOpenMobileNav }: PageProps) {
         </div>
 
         {/* Recipients Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {recipients.map((rec) => (
-            <div key={rec.id} className="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-bold text-white text-sm">{rec.display_name}</h4>
-                  <p className="text-xs text-indigo-400 font-medium">{rec.role_title || rec.department} ({rec.department})</p>
-                </div>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-44 bg-[var(--bg-surface)] rounded-xl border border-[var(--border-color)] animate-pulse" />
+            ))}
+          </div>
+        ) : recipients.length === 0 ? (
+          <div className="bg-[var(--bg-surface)] rounded-xl border border-[var(--border-color)] p-8 text-center space-y-3">
+            <Users className="w-8 h-8 text-[var(--text-muted)] mx-auto" />
+            <p className="text-sm font-medium text-[var(--text-primary)]">No Recipients Configured</p>
+            <p className="text-xs text-[var(--text-muted)] max-w-sm mx-auto">
+              Add human agents or call center destinations to handle live call transfers.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {recipients.map((rec) => (
+              <div key={rec.id} className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] space-y-4 shadow-sm hover:border-[var(--accent-primary-subtle)] transition-colors">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="font-semibold text-[var(--text-primary)] text-sm">{rec.display_name}</h4>
+                    <p className="text-xs text-[var(--accent-primary)] font-medium">{rec.role_title || rec.department} ({rec.department})</p>
+                  </div>
 
-                <span
-                  onClick={() => canManage && handleToggleStatus(rec.id, rec.availability_status)}
-                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase cursor-pointer transition-all ${
-                    rec.availability_status === 'available'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : rec.availability_status === 'busy'
-                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                      : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                  }`}
-                  title="Click to toggle availability status"
-                >
-                  ● {rec.availability_status}
-                </span>
-              </div>
-
-              <div className="space-y-1.5 text-xs text-zinc-300 font-mono bg-zinc-950 p-3 rounded-xl border border-zinc-800/80">
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">Destination:</span>
-                  <span className="font-semibold text-white">{formatPhone(rec.phone_number)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">Business Hours:</span>
-                  <span>{rec.business_hours_start} - {rec.business_hours_end}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">Routing Priority:</span>
-                  <span className="text-indigo-300">#{rec.routing_priority}</span>
-                </div>
-              </div>
-
-              {canManage && (
-                <div className="pt-2 border-t border-zinc-800 flex items-center justify-between">
                   <button
-                    onClick={() => openEditModal(rec)}
-                    className="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors"
+                    onClick={() => canManage && handleToggleStatus(rec.id, rec.availability_status)}
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase transition-all ${
+                      rec.availability_status === 'available'
+                        ? 'bg-[var(--status-success-bg)] text-[var(--status-success)] border border-[var(--status-success)]/30'
+                        : rec.availability_status === 'busy'
+                        ? 'bg-[var(--status-danger-bg)] text-[var(--status-danger)] border border-[var(--status-danger)]/30'
+                        : 'bg-[var(--status-warning-bg)] text-[var(--status-warning)] border border-[var(--status-warning)]/30'
+                    }`}
+                    title="Click to toggle availability status"
                   >
-                    <Edit2 className="w-3.5 h-3.5" /> Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(rec.id)}
-                    className="p-1.5 rounded-xl bg-zinc-800 hover:bg-rose-950/60 text-zinc-400 hover:text-rose-300 transition-colors"
-                    title="Disable Recipient"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    ● {rec.availability_status}
                   </button>
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
+
+                <div className="space-y-1 text-xs text-[var(--text-secondary)] font-mono bg-[var(--bg-surface-secondary)] p-3 rounded-md border border-[var(--border-color)]">
+                  <div className="flex justify-between">
+                    <span className="text-[var(--text-muted)]">Destination:</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{formatPhone(rec.phone_number)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--text-muted)]">Business Hours:</span>
+                    <span>{rec.business_hours_start} - {rec.business_hours_end}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--text-muted)]">Routing Priority:</span>
+                    <span className="text-[var(--accent-primary)] font-bold">#{rec.routing_priority}</span>
+                  </div>
+                </div>
+
+                {canManage && (
+                  <div className="pt-2 border-t border-[var(--border-color)] flex items-center justify-between">
+                    <button
+                      onClick={() => openEditModal(rec)}
+                      className="px-3 py-1 rounded-md bg-[var(--bg-surface-secondary)] hover:bg-[var(--border-color)] text-[var(--text-primary)] text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" /> Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(rec.id)}
+                      className="p-1.5 rounded-md hover:bg-[var(--status-danger-bg)] text-[var(--text-muted)] hover:text-[var(--status-danger)] transition-colors"
+                      title="Disable Recipient"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Add/Edit Recipient Modal */}
         {showModal && (
-          <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
             <form
               onSubmit={handleSave}
-              className="w-full max-w-md rounded-2xl bg-zinc-900 border border-zinc-800 p-6 shadow-2xl space-y-4 text-xs"
+              className="w-full max-w-md rounded-xl bg-[var(--bg-surface)] border border-[var(--border-color)] p-6 shadow-2xl space-y-4 text-xs"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-                <h3 className="text-base font-bold text-white">
+              <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">
                   {editingRecipient ? 'Edit Recipient Configuration' : 'Add New Recipient Destination'}
                 </h3>
-                <button type="button" onClick={() => setShowModal(false)} className="text-zinc-400 hover:text-white">
-                  <X className="w-5 h-5" />
+                <button type="button" onClick={() => setShowModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
               <div className="space-y-3">
                 <div>
-                  <label className="text-zinc-400 block mb-1">Full Display Name</label>
+                  <label className="text-[var(--text-secondary)] font-medium block mb-1">Full Display Name</label>
                   <input
                     type="text"
                     required
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     placeholder="e.g. Vikram Mehta"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-md px-3 py-1.5 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-zinc-400 block mb-1">Department</label>
+                    <label className="text-[var(--text-secondary)] font-medium block mb-1">Department</label>
                     <select
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-md px-3 py-1.5 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                     >
                       <option value="Sales">Sales</option>
                       <option value="Support">Customer Support</option>
@@ -284,74 +297,74 @@ export default function RecipientsPage({ onOpenMobileNav }: PageProps) {
                     </select>
                   </div>
                   <div>
-                    <label className="text-zinc-400 block mb-1">Role Title</label>
+                    <label className="text-[var(--text-secondary)] font-medium block mb-1">Role Title</label>
                     <input
                       type="text"
                       value={roleTitle}
                       onChange={(e) => setRoleTitle(e.target.value)}
                       placeholder="e.g. Sales Director"
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-md px-3 py-1.5 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-zinc-400 block mb-1">Forwarding Telephone Number (E.164)</label>
+                  <label className="text-[var(--text-secondary)] font-medium block mb-1">Forwarding Telephone Number (E.164)</label>
                   <input
                     type="text"
                     required
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="+919876543210"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-md px-3 py-1.5 text-[var(--text-primary)] font-mono focus:outline-none focus:border-[var(--accent-primary)]"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-zinc-400 block mb-1">Hours Start</label>
+                    <label className="text-[var(--text-secondary)] font-medium block mb-1">Hours Start</label>
                     <input
                       type="time"
                       value={hoursStart}
                       onChange={(e) => setHoursStart(e.target.value)}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-md px-3 py-1.5 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                     />
                   </div>
                   <div>
-                    <label className="text-zinc-400 block mb-1">Hours End</label>
+                    <label className="text-[var(--text-secondary)] font-medium block mb-1">Hours End</label>
                     <input
                       type="time"
                       value={hoursEnd}
                       onChange={(e) => setHoursEnd(e.target.value)}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-md px-3 py-1.5 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-zinc-400 block mb-1">Routing Priority (1 = Highest)</label>
+                  <label className="text-[var(--text-secondary)] font-medium block mb-1">Routing Priority (1 = Highest)</label>
                   <input
                     type="number"
                     min="1"
                     max="10"
                     value={routingPriority}
                     onChange={(e) => setRoutingPriority(Number(e.target.value))}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full bg-[var(--bg-app)] border border-[var(--border-color)] rounded-md px-3 py-1.5 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-zinc-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[var(--border-color)]">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-xl bg-zinc-800 text-zinc-300 font-semibold"
+                  className="px-3 py-1.5 rounded-md bg-[var(--bg-surface-secondary)] text-[var(--text-secondary)] font-medium hover:bg-[var(--border-color)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold"
+                  className="px-3 py-1.5 rounded-md bg-[var(--accent-primary)] hover:opacity-90 text-white font-medium shadow-sm"
                 >
                   Save Recipient
                 </button>
@@ -363,3 +376,4 @@ export default function RecipientsPage({ onOpenMobileNav }: PageProps) {
     </div>
   );
 }
+

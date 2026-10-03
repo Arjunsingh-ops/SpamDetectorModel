@@ -29,6 +29,17 @@ class DeterministicRoutingPolicy:
         allowlisted: bool = False,
         blocklisted: bool = False,
     ) -> Dict[str, Any]:
+        # Rule 0: Allowlisted / Saved Contact Direct Forwarding
+        if allowlisted:
+            primary_recipient = recipient_resolver.resolve_recipient(db, intent) if db else None
+            return {
+                "action": "immediate_transfer",
+                "recipient": primary_recipient,
+                "backup_recipient": primary_recipient.backup_recipient if primary_recipient else None,
+                "reason": "Caller is a saved contact (allowlisted). Direct forwarding enabled.",
+                "allow_transfer": True,
+            }
+
         # Rule 1: High Spam Risk Policy (Score >= 70 or blocklisted)
         if blocklisted or risk_category == "HIGH" or spam_score >= 70:
             logger.warning(f"Routing blocked due to HIGH spam score ({spam_score}). Routing to operator review queue.")

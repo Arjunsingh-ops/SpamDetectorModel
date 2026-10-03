@@ -10,12 +10,9 @@ import {
   ShieldCheck,
   Ban,
   Sliders,
-  Play,
   Plus,
   BarChart2,
   RefreshCw,
-  Search,
-  Lock,
 } from 'lucide-react';
 import { MOCK_CALLS, MOCK_SPAM_ASSESSMENTS } from '@/lib/mock-data';
 import {
@@ -31,7 +28,6 @@ export default function SpamReviewPage() {
   const [overview, setOverview] = useState<any>(null);
   const [lists, setLists] = useState<{ allowlist: any[]; blocklist: any[] }>({ allowlist: [], blocklist: [] });
   const [rules, setRules] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
 
   // Form states for list entry
   const [newNumber, setNewNumber] = useState('');
@@ -44,7 +40,6 @@ export default function SpamReviewPage() {
 
   useEffect(() => {
     async function loadData() {
-      setLoading(true);
       const [ov, ls, rl] = await Promise.all([
         fetchSpamOverview(),
         fetchAllowlistBlocklist(),
@@ -53,7 +48,6 @@ export default function SpamReviewPage() {
       setOverview(ov);
       setLists(ls);
       setRules(rl);
-      setLoading(false);
     }
     loadData();
   }, []);
@@ -85,8 +79,7 @@ export default function SpamReviewPage() {
 
   const runEvaluation = async () => {
     setEvalRunning(true);
-    // Simulate latency or call API
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 600));
     setEvalResult({
       total_samples: 9,
       precision: 100.0,
@@ -102,102 +95,102 @@ export default function SpamReviewPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-zinc-950 text-zinc-100 select-none">
+    <div className="flex-1 flex flex-col min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] select-none">
       <Header
         title="Stage 5: AI Spam Detection & Call Screening"
         subtitle="Multi-signal risk engine, explainable attributions, operator review, allowlist/blocklist & benchmark metrics."
       />
 
-      <main className="p-6 max-w-7xl w-full mx-auto space-y-6">
+      <main className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-4">
         {/* KPI Summary Banner */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800">
-            <p className="text-xs text-zinc-400 font-medium uppercase tracking-wider">Total Screened Calls</p>
-            <p className="text-2xl font-bold text-white mt-1">{overview?.total_screened || 142}</p>
-            <span className="text-[10px] text-zinc-500">Live multi-signal stream</span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="p-4 rounded card-panel">
+            <p className="text-xs text-[var(--text-muted)] font-medium uppercase tracking-wider">Total Screened Calls</p>
+            <p className="text-xl font-bold text-[var(--text-primary)] mt-1 font-mono">{overview?.total_screened || 142}</p>
+            <span className="text-[10px] text-[var(--text-muted)]">Live multi-signal stream</span>
           </div>
 
-          <div className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800">
-            <p className="text-xs text-zinc-400 font-medium uppercase tracking-wider font-semibold">Flagged / Review Queue</p>
-            <p className="text-2xl font-bold text-rose-400 mt-1">{pendingCalls.length}</p>
-            <span className="text-[10px] text-rose-400/80">Operator verification needed</span>
+          <div className="p-4 rounded card-panel">
+            <p className="text-xs text-[var(--text-muted)] font-semibold uppercase tracking-wider">Flagged / Review Queue</p>
+            <p className="text-xl font-bold text-[var(--status-danger)] mt-1 font-mono">{pendingCalls.length}</p>
+            <span className="text-[10px] text-[var(--status-danger)]">Operator verification needed</span>
           </div>
 
-          <div className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800">
-            <p className="text-xs text-zinc-400 font-medium uppercase tracking-wider">Allowlist / Blocklist</p>
-            <p className="text-2xl font-bold text-indigo-400 mt-1">
-              {lists.allowlist.length} <span className="text-zinc-500 font-normal text-sm">/ {lists.blocklist.length}</span>
+          <div className="p-4 rounded card-panel">
+            <p className="text-xs text-[var(--text-muted)] font-medium uppercase tracking-wider">Allowlist / Blocklist</p>
+            <p className="text-xl font-bold text-[var(--accent-primary)] mt-1 font-mono">
+              {lists.allowlist.length} <span className="text-[var(--text-muted)] font-normal text-xs">/ {lists.blocklist.length}</span>
             </p>
-            <span className="text-[10px] text-zinc-500">Active E.164 rules</span>
+            <span className="text-[10px] text-[var(--text-muted)]">Active E.164 rules</span>
           </div>
 
-          <div className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800">
-            <p className="text-xs text-zinc-400 font-medium uppercase tracking-wider">Benchmark F1-Score</p>
-            <p className="text-2xl font-bold text-emerald-400 mt-1">
+          <div className="p-4 rounded card-panel">
+            <p className="text-xs text-[var(--text-muted)] font-medium uppercase tracking-wider">Benchmark F1-Score</p>
+            <p className="text-xl font-bold text-[var(--status-success)] mt-1 font-mono">
               {overview?.benchmark_f1 ? `${(overview.benchmark_f1 * 100).toFixed(1)}%` : '90.9%'}
             </p>
-            <span className="text-[10px] text-emerald-400/80">Synthetic dataset score</span>
+            <span className="text-[10px] text-[var(--status-success)]">Synthetic dataset score</span>
           </div>
         </div>
 
         {/* Governance Notice */}
-        <div className="p-4 rounded-xl bg-indigo-950/30 border border-indigo-800/40 text-xs text-indigo-200 flex items-start gap-3">
-          <Info className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-semibold text-white">Ethical Guardrails & Non-Destructive Screening Policy</p>
-            <p className="text-zinc-300 leading-relaxed">
-              Calls evaluated as HIGH risk (Score ≥ 70) are challenged with neutral screening questions or routed to the human operator review queue. High-risk classification never triggers irreversible automatic call termination without operator authorization.
+        <div className="p-3.5 rounded bg-[var(--accent-primary-subtle)] border border-[var(--border-color)] text-xs text-[var(--text-primary)] flex items-start gap-2.5">
+          <Info className="w-4 h-4 text-[var(--accent-primary)] shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <p className="font-semibold">Ethical Guardrails & Non-Destructive Screening Policy</p>
+            <p className="text-[var(--text-secondary)] leading-relaxed text-[11px]">
+              Calls evaluated as HIGH risk (Score ≥ 70) are challenged with neutral screening questions or routed to the human operator review queue. High-risk classification never triggers irreversible automatic call termination without explicit operator authorization.
             </p>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
+        <div className="flex items-center gap-2 border-b border-[var(--border-color)] pb-2.5">
           <button
             onClick={() => setActiveTab('queue')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+            className={`px-3 py-1.5 rounded text-xs font-medium flex items-center gap-1.5 transition-colors ${
               activeTab === 'queue'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200'
+                ? 'bg-[var(--accent-primary)] text-white'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--bg-surface-secondary)]'
             }`}
           >
-            <ShieldAlert className="w-4 h-4" />
+            <ShieldAlert className="w-3.5 h-3.5" />
             Human Review Queue ({pendingCalls.length})
           </button>
 
           <button
             onClick={() => setActiveTab('lists')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+            className={`px-3 py-1.5 rounded text-xs font-medium flex items-center gap-1.5 transition-colors ${
               activeTab === 'lists'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200'
+                ? 'bg-[var(--accent-primary)] text-white'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--bg-surface-secondary)]'
             }`}
           >
-            <Ban className="w-4 h-4" />
+            <Ban className="w-3.5 h-3.5" />
             Allowlist & Blocklist
           </button>
 
           <button
             onClick={() => setActiveTab('rules')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+            className={`px-3 py-1.5 rounded text-xs font-medium flex items-center gap-1.5 transition-colors ${
               activeTab === 'rules'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200'
+                ? 'bg-[var(--accent-primary)] text-white'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--bg-surface-secondary)]'
             }`}
           >
-            <Sliders className="w-4 h-4" />
+            <Sliders className="w-3.5 h-3.5" />
             Risk Rules & Thresholds
           </button>
 
           <button
             onClick={() => setActiveTab('eval')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+            className={`px-3 py-1.5 rounded text-xs font-medium flex items-center gap-1.5 transition-colors ${
               activeTab === 'eval'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200'
+                ? 'bg-[var(--accent-primary)] text-white'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] bg-[var(--bg-surface-secondary)]'
             }`}
           >
-            <BarChart2 className="w-4 h-4" />
+            <BarChart2 className="w-3.5 h-3.5" />
             Model Benchmark Eval
           </button>
         </div>
@@ -206,15 +199,15 @@ export default function SpamReviewPage() {
         {activeTab === 'queue' && (
           <div className="space-y-4">
             {pendingCalls.length === 0 ? (
-              <div className="p-12 rounded-2xl bg-zinc-900/60 border border-zinc-800 text-center space-y-3">
-                <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
-                <h4 className="text-base font-semibold text-white">Queue Cleared!</h4>
-                <p className="text-xs text-zinc-400 max-w-md mx-auto">
+              <div className="p-10 rounded card-panel text-center space-y-2">
+                <CheckCircle2 className="w-10 h-10 text-[var(--status-success)] mx-auto" />
+                <h4 className="text-sm font-semibold text-[var(--text-primary)]">Queue Cleared!</h4>
+                <p className="text-xs text-[var(--text-muted)] max-w-md mx-auto">
                   All flagged spam and uncertain calls have been reviewed. The system continues monitoring inbound streams.
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {pendingCalls.map((call) => {
                   const assessment = MOCK_SPAM_ASSESSMENTS[call.id] || {
                     callId: call.id,
@@ -244,32 +237,32 @@ export default function SpamReviewPage() {
 
         {/* TAB 2: ALLOWLIST & BLOCKLIST */}
         {activeTab === 'lists' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Entry Form */}
-            <div className="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-4">
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <Plus className="w-4 h-4 text-indigo-400" />
+            <div className="p-4 rounded card-panel space-y-3">
+              <h3 className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+                <Plus className="w-3.5 h-3.5 text-[var(--accent-primary)]" />
                 Add E.164 Number Rule
               </h3>
-              <form onSubmit={handleAddListEntry} className="space-y-3 text-xs">
+              <form onSubmit={handleAddListEntry} className="space-y-2.5 text-xs">
                 <div>
-                  <label className="text-zinc-400 block mb-1">Phone Number (E.164 format)</label>
+                  <label className="text-[var(--text-muted)] block mb-1">Phone Number (E.164 format)</label>
                   <input
                     type="text"
                     placeholder="+919876543210"
                     value={newNumber}
                     onChange={(e) => setNewNumber(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-white font-mono placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="input-control w-full font-mono text-xs"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="text-zinc-400 block mb-1">Policy List</label>
+                  <label className="text-[var(--text-muted)] block mb-1">Policy List</label>
                   <select
                     value={newListType}
                     onChange={(e) => setNewListType(e.target.value as 'allow' | 'block')}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="input-control w-full text-xs"
                   >
                     <option value="block">Blocklist (Force HIGH Risk 100)</option>
                     <option value="allow">Allowlist (Force LOW Risk 0)</option>
@@ -277,19 +270,19 @@ export default function SpamReviewPage() {
                 </div>
 
                 <div>
-                  <label className="text-zinc-400 block mb-1">Reason / Case Reference</label>
+                  <label className="text-[var(--text-muted)] block mb-1">Reason / Case Reference</label>
                   <input
                     type="text"
                     placeholder="e.g., Confirmed Loan Phishing Bot"
                     value={newReason}
                     onChange={(e) => setNewReason(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="input-control w-full text-xs"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors"
+                  className="btn-primary w-full text-xs py-2 mt-1"
                 >
                   Save Entry Rule
                 </button>
@@ -297,50 +290,50 @@ export default function SpamReviewPage() {
             </div>
 
             {/* List Tables */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4">
               {/* Allowlist Section */}
-              <div className="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-3">
+              <div className="p-4 rounded card-panel space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <h4 className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-[var(--status-success)]" />
                     Authorized Allowlist ({lists.allowlist.length})
                   </h4>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {lists.allowlist.map((item) => (
                     <div
                       key={item.id}
-                      className="p-3 rounded-xl bg-zinc-950 border border-zinc-800/80 flex items-center justify-between text-xs"
+                      className="p-2.5 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] flex items-center justify-between text-xs"
                     >
                       <div>
-                        <p className="font-mono font-semibold text-emerald-300">{item.phone_number}</p>
-                        <p className="text-[11px] text-zinc-400">{item.reason}</p>
+                        <p className="font-mono font-medium text-[var(--status-success)]">{item.phone_number}</p>
+                        <p className="text-[11px] text-[var(--text-muted)]">{item.reason}</p>
                       </div>
-                      <span className="text-[10px] text-zinc-500">{new Date(item.created_at).toLocaleDateString()}</span>
+                      <span className="text-[10px] text-[var(--text-muted)]">{new Date(item.created_at).toLocaleDateString()}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Blocklist Section */}
-              <div className="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-3">
+              <div className="p-4 rounded card-panel space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-                    <Ban className="w-4 h-4 text-rose-400" />
+                  <h4 className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+                    <Ban className="w-4 h-4 text-[var(--status-danger)]" />
                     Confirmed Blocklist ({lists.blocklist.length})
                   </h4>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {lists.blocklist.map((item) => (
                     <div
                       key={item.id}
-                      className="p-3 rounded-xl bg-zinc-950 border border-zinc-800/80 flex items-center justify-between text-xs"
+                      className="p-2.5 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] flex items-center justify-between text-xs"
                     >
                       <div>
-                        <p className="font-mono font-semibold text-rose-300">{item.phone_number}</p>
-                        <p className="text-[11px] text-zinc-400">{item.reason}</p>
+                        <p className="font-mono font-medium text-[var(--status-danger)]">{item.phone_number}</p>
+                        <p className="text-[11px] text-[var(--text-muted)]">{item.reason}</p>
                       </div>
-                      <span className="text-[10px] text-zinc-500">{new Date(item.created_at).toLocaleDateString()}</span>
+                      <span className="text-[10px] text-[var(--text-muted)]">{new Date(item.created_at).toLocaleDateString()}</span>
                     </div>
                   ))}
                 </div>
@@ -351,52 +344,52 @@ export default function SpamReviewPage() {
 
         {/* TAB 3: RULES & CONFIG */}
         {activeTab === 'rules' && (
-          <div className="space-y-6">
-            <div className="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-4">
-              <h3 className="text-sm font-semibold text-white">Multi-Signal Scoring Weight Configuration</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-amber-400">Reputation Signal Weight</span>
+          <div className="space-y-4">
+            <div className="p-4 rounded card-panel space-y-3">
+              <h3 className="text-xs font-semibold text-[var(--text-primary)]">Multi-Signal Scoring Weight Configuration</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] space-y-1">
+                  <div className="flex justify-between font-medium">
+                    <span className="text-[var(--status-warning)]">Reputation Signal Weight</span>
                     <span>40%</span>
                   </div>
-                  <p className="text-[11px] text-zinc-400">Evaluates CLI history, call frequency, allow/block list matches, and past reports.</p>
+                  <p className="text-[11px] text-[var(--text-muted)]">Evaluates CLI history, call frequency, allow/block list matches, and past reports.</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-rose-400">Semantic Signal Weight</span>
+                <div className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] space-y-1">
+                  <div className="flex justify-between font-medium">
+                    <span className="text-[var(--status-danger)]">Semantic Signal Weight</span>
                     <span>50%</span>
                   </div>
-                  <p className="text-[11px] text-zinc-400">Analyzes live transcript indicators, OTP requests, pressure tactics, and prompt-injection.</p>
+                  <p className="text-[11px] text-[var(--text-muted)]">Analyzes live transcript indicators, OTP requests, pressure tactics, and prompt-injection.</p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-indigo-400">Behavioral Signal Weight</span>
+                <div className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] space-y-1">
+                  <div className="flex justify-between font-medium">
+                    <span className="text-[var(--accent-primary)]">Behavioral Signal Weight</span>
                     <span>10%</span>
                   </div>
-                  <p className="text-[11px] text-zinc-400">Tracks rapid short repeat calls and sliding window burst rates.</p>
+                  <p className="text-[11px] text-[var(--text-muted)]">Tracks rapid short repeat calls and sliding window burst rates.</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-4">
-              <h3 className="text-sm font-semibold text-white">Active Heuristic & Keyword Rules</h3>
-              <div className="space-y-3">
+            <div className="p-4 rounded card-panel space-y-3">
+              <h3 className="text-xs font-semibold text-[var(--text-primary)]">Active Heuristic & Keyword Rules</h3>
+              <div className="space-y-2">
                 {rules.map((rule) => (
-                  <div key={rule.id} className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-between text-xs">
+                  <div key={rule.id} className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] flex items-center justify-between text-xs">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-white">{rule.rule_name}</span>
-                        <span className="px-2 py-0.5 rounded bg-rose-950 text-rose-300 text-[10px] font-mono">
+                        <span className="font-semibold text-[var(--text-primary)]">{rule.rule_name}</span>
+                        <span className="px-2 py-0.5 rounded badge-danger text-[10px] font-mono">
                           Weight: +{rule.risk_weight}
                         </span>
                       </div>
-                      <p className="text-[11px] text-zinc-400 mt-1">{rule.description}</p>
-                      <p className="text-[10px] text-zinc-500 font-mono mt-0.5">Pattern: {rule.pattern}</p>
+                      <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{rule.description}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] font-mono mt-0.5">Pattern: {rule.pattern}</p>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/30">
+                    <span className="badge-pill badge-success">
                       Active
                     </span>
                   </div>
@@ -408,77 +401,77 @@ export default function SpamReviewPage() {
 
         {/* TAB 4: BENCHMARK EVALUATION */}
         {activeTab === 'eval' && (
-          <div className="space-y-6">
-            <div className="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 flex items-center justify-between">
+          <div className="space-y-4">
+            <div className="p-4 rounded card-panel flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-white">Synthetic Evaluation Benchmark</h3>
-                <p className="text-xs text-zinc-400 mt-0.5">
+                <h3 className="text-xs font-semibold text-[var(--text-primary)]">Synthetic Evaluation Benchmark</h3>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
                   Evaluate hybrid model accuracy across held-out synthetic test cases in English, Hindi, and Hinglish.
                 </p>
               </div>
               <button
                 onClick={runEvaluation}
                 disabled={evalRunning}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs inline-flex items-center gap-2 transition-colors disabled:opacity-50"
+                className="btn-primary text-xs inline-flex items-center gap-1.5 disabled:opacity-50"
               >
-                <RefreshCw className={`w-4 h-4 ${evalRunning ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-3.5 h-3.5 ${evalRunning ? 'animate-spin' : ''}`} />
                 {evalRunning ? 'Evaluating...' : 'Run Benchmark Evaluation'}
               </button>
             </div>
 
             {evalResult && (
-              <div className="p-6 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                  <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800">
-                    <p className="text-[10px] text-zinc-400 uppercase font-semibold">Precision</p>
-                    <p className="text-2xl font-bold text-emerald-400 mt-1">{evalResult.precision}%</p>
+              <div className="p-4 rounded card-panel space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                  <div className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)]">
+                    <p className="text-[10px] text-[var(--text-muted)] uppercase font-semibold">Precision</p>
+                    <p className="text-xl font-bold text-[var(--status-success)] mt-0.5 font-mono">{evalResult.precision}%</p>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800">
-                    <p className="text-[10px] text-zinc-400 uppercase font-semibold">Recall</p>
-                    <p className="text-2xl font-bold text-sky-400 mt-1">{evalResult.recall}%</p>
+                  <div className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)]">
+                    <p className="text-[10px] text-[var(--text-muted)] uppercase font-semibold">Recall</p>
+                    <p className="text-xl font-bold text-[var(--status-info)] mt-0.5 font-mono">{evalResult.recall}%</p>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800">
-                    <p className="text-[10px] text-zinc-400 uppercase font-semibold">F1-Score</p>
-                    <p className="text-2xl font-bold text-indigo-400 mt-1">{evalResult.f1_score}%</p>
+                  <div className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)]">
+                    <p className="text-[10px] text-[var(--text-muted)] uppercase font-semibold">F1-Score</p>
+                    <p className="text-xl font-bold text-[var(--accent-primary)] mt-0.5 font-mono">{evalResult.f1_score}%</p>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800">
-                    <p className="text-[10px] text-zinc-400 uppercase font-semibold">Avg Latency</p>
-                    <p className="text-2xl font-bold text-amber-400 mt-1">{evalResult.avg_latency_ms} ms</p>
+                  <div className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)]">
+                    <p className="text-[10px] text-[var(--text-muted)] uppercase font-semibold">Avg Latency</p>
+                    <p className="text-xl font-bold text-[var(--status-warning)] mt-0.5 font-mono">{evalResult.avg_latency_ms} ms</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                  <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
-                    <p className="font-semibold text-white mb-2">Confusion Matrix Breakdown</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  <div className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] space-y-2">
+                    <p className="font-semibold text-[var(--text-primary)] mb-1">Confusion Matrix Breakdown</p>
                     <div className="grid grid-cols-2 gap-2 text-center">
-                      <div className="p-2 rounded bg-emerald-950/40 border border-emerald-800/40">
-                        <span className="text-emerald-300 font-bold">TP: {evalResult.confusion_matrix.TP}</span>
-                        <p className="text-[9px] text-zinc-400">Correct Spam</p>
+                      <div className="p-2 rounded bg-[var(--status-success-bg)] border border-[var(--status-success-bg)]">
+                        <span className="text-[var(--status-success)] font-bold">TP: {evalResult.confusion_matrix.TP}</span>
+                        <p className="text-[9px] text-[var(--text-muted)]">Correct Spam</p>
                       </div>
-                      <div className="p-2 rounded bg-rose-950/40 border border-rose-800/40">
-                        <span className="text-rose-300 font-bold">FP: {evalResult.confusion_matrix.FP}</span>
-                        <p className="text-[9px] text-zinc-400">False Positive</p>
+                      <div className="p-2 rounded bg-[var(--status-danger-bg)] border border-[var(--status-danger-bg)]">
+                        <span className="text-[var(--status-danger)] font-bold">FP: {evalResult.confusion_matrix.FP}</span>
+                        <p className="text-[9px] text-[var(--text-muted)]">False Positive</p>
                       </div>
-                      <div className="p-2 rounded bg-amber-950/40 border border-amber-800/40">
-                        <span className="text-amber-300 font-bold">FN: {evalResult.confusion_matrix.FN}</span>
-                        <p className="text-[9px] text-zinc-400">False Negative</p>
+                      <div className="p-2 rounded bg-[var(--status-warning-bg)] border border-[var(--status-warning-bg)]">
+                        <span className="text-[var(--status-warning)] font-bold">FN: {evalResult.confusion_matrix.FN}</span>
+                        <p className="text-[9px] text-[var(--text-muted)]">False Negative</p>
                       </div>
-                      <div className="p-2 rounded bg-indigo-950/40 border border-indigo-800/40">
-                        <span className="text-indigo-300 font-bold">TN: {evalResult.confusion_matrix.TN}</span>
-                        <p className="text-[9px] text-zinc-400">Correct Legitimate</p>
+                      <div className="p-2 rounded bg-[var(--accent-primary-subtle)] border border-[var(--border-color)]">
+                        <span className="text-[var(--accent-primary)] font-bold">TN: {evalResult.confusion_matrix.TN}</span>
+                        <p className="text-[9px] text-[var(--text-muted)]">Correct Legitimate</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
-                    <p className="font-semibold text-white mb-2">Latency by Language</p>
+                  <div className="p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] space-y-1.5">
+                    <p className="font-semibold text-[var(--text-primary)] mb-1">Latency by Language</p>
                     {Object.entries(evalResult.latency_by_language).map(([lang, lat]: any) => (
-                      <div key={lang} className="flex justify-between items-center py-1.5 border-b border-zinc-900">
-                        <span className="text-zinc-300 font-medium">{lang}</span>
-                        <span className="font-mono text-amber-400 font-bold">{lat}</span>
+                      <div key={lang} className="flex justify-between items-center py-1 border-b border-[var(--border-color)]">
+                        <span className="text-[var(--text-secondary)] font-medium">{lang}</span>
+                        <span className="font-mono text-[var(--status-warning)] font-bold">{lat}</span>
                       </div>
                     ))}
                   </div>
@@ -491,4 +484,3 @@ export default function SpamReviewPage() {
     </div>
   );
 }
-

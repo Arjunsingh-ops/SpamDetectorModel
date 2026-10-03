@@ -53,6 +53,9 @@ class RecipientResolver:
         intent: CallerIntent,
     ) -> Optional[Recipient]:
         """Find best matching active recipient for given caller intent."""
+        if not db:
+            return None
+
         # 1. Try explicit recipient name match
         if intent.requested_recipient:
             recipient = (

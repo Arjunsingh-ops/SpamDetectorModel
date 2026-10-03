@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, Phone, ShieldCheck, ShieldAlert, HelpCircle, Eye, Clock } from 'lucide-react';
+import { Search, Phone, ShieldCheck, ShieldAlert, HelpCircle, Eye, Clock, X } from 'lucide-react';
 import { CallRecord } from '@/types';
-import { Badge } from '@/components/ui/badge';
 
 interface CallTableProps {
   calls: CallRecord[];
@@ -30,53 +29,53 @@ export function CallTable({ calls, title = 'Recent Call Activity', showFilters =
 
   const getDispositionBadge = (disp: string, spamScore: number) => {
     if (disp === 'legitimate') {
-      return <Badge variant="success"><ShieldCheck className="w-3 h-3" /> Legitimate</Badge>;
+      return <span className="badge-pill badge-success"><ShieldCheck className="w-3 h-3" /> Legitimate</span>;
     }
     if (disp === 'spam') {
-      return <Badge variant="destructive"><ShieldAlert className="w-3 h-3" /> Spam ({spamScore})</Badge>;
+      return <span className="badge-pill badge-danger"><ShieldAlert className="w-3 h-3" /> Spam ({spamScore})</span>;
     }
-    return <Badge variant="warning"><HelpCircle className="w-3 h-3" /> Screened ({spamScore})</Badge>;
+    return <span className="badge-pill badge-warning"><HelpCircle className="w-3 h-3" /> Screened ({spamScore})</span>;
   };
 
   const getLanguageChip = (lang: string) => {
-    if (lang === 'hi-IN') return <span className="text-[10px] px-2 py-0.5 rounded bg-orange-950/60 text-orange-300 border border-orange-800/40">हिन्दी</span>;
-    if (lang === 'en-IN') return <span className="text-[10px] px-2 py-0.5 rounded bg-sky-950/60 text-sky-300 border border-sky-800/40">English</span>;
-    return <span className="text-[10px] px-2 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/40">Hinglish</span>;
+    if (lang === 'hi-IN') return <span className="text-[10px] px-2 py-0.5 rounded badge-neutral">Hindi</span>;
+    if (lang === 'en-IN') return <span className="text-[10px] px-2 py-0.5 rounded badge-info">English</span>;
+    return <span className="text-[10px] px-2 py-0.5 rounded badge-neutral">Hinglish</span>;
   };
 
   return (
-    <div className="rounded-2xl bg-zinc-900/80 border border-zinc-800 backdrop-blur-xl overflow-hidden">
+    <div className="card-panel overflow-hidden shadow-sm">
       {/* Header & Filter Controls */}
-      <div className="p-5 border-b border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-4 border-b border-[var(--border-color)] flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-white">{title}</h3>
-          <p className="text-xs text-zinc-400">Total records: {filteredCalls.length}</p>
+          <h3 className="text-sm font-semibold text-[var(--text-primary)] tracking-tight">{title}</h3>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">Total records evaluated: <span className="font-mono text-[var(--accent-primary)] font-semibold">{filteredCalls.length}</span></p>
         </div>
 
         {showFilters && (
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
             {/* Search Input */}
             <div className="relative">
-              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-[var(--text-muted)] absolute left-2.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Search caller or intent..."
+                placeholder="Search caller, number, intent..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full sm:w-60 bg-zinc-950 border border-zinc-800 text-xs rounded-xl pl-9 pr-3 py-2 text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="input-control w-full sm:w-56 text-xs pl-8 py-1.5"
               />
             </div>
 
             {/* Filter Tabs */}
-            <div className="flex items-center rounded-xl bg-zinc-950 border border-zinc-800 p-1 text-xs">
+            <div className="flex items-center rounded-md bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] p-0.5 text-xs">
               {['all', 'legitimate', 'spam', 'uncertain'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setFilter(tab)}
-                  className={`px-3 py-1 rounded-lg capitalize transition-colors font-medium ${
+                  className={`px-2.5 py-1 rounded text-xs capitalize transition-colors font-medium ${
                     filter === tab
-                      ? 'bg-zinc-800 text-white'
-                      : 'text-zinc-400 hover:text-zinc-200'
+                      ? 'bg-[var(--accent-primary)] text-white'
+                      : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'
                   }`}
                 >
                   {tab}
@@ -90,55 +89,55 @@ export function CallTable({ calls, title = 'Recent Call Activity', showFilters =
       {/* Calls Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
-          <thead className="bg-zinc-950/60 border-b border-zinc-800/80 text-zinc-400 font-medium">
+          <thead className="bg-[var(--bg-surface-secondary)] border-b border-[var(--border-color)] text-[var(--text-muted)] font-semibold uppercase tracking-wider text-[10px]">
             <tr>
-              <th className="px-5 py-3">Caller</th>
-              <th className="px-4 py-3">Language</th>
-              <th className="px-4 py-3">Intent / Subject</th>
-              <th className="px-4 py-3">Disposition</th>
-              <th className="px-4 py-3">Duration</th>
-              <th className="px-4 py-3 text-right">Action</th>
+              <th className="px-4 py-2.5">Caller Identity</th>
+              <th className="px-3 py-2.5">Language</th>
+              <th className="px-3 py-2.5">Extracted Intent</th>
+              <th className="px-3 py-2.5">Disposition & Risk</th>
+              <th className="px-3 py-2.5">Duration</th>
+              <th className="px-4 py-2.5 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-800/60">
+          <tbody className="divide-y divide-[var(--border-color)]">
             {filteredCalls.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-10 text-zinc-400">
-                  No matching calls found in database.
+                <td colSpan={6} className="text-center py-10 text-[var(--text-muted)]">
+                  No matching call records present.
                 </td>
               </tr>
             ) : (
               filteredCalls.map((call) => (
-                <tr key={call.id} className="hover:bg-zinc-800/30 transition-colors">
-                  <td className="px-5 py-3.5">
-                    <div className="font-medium text-zinc-100">{call.callerName || 'Unknown Caller'}</div>
-                    <div className="text-[11px] text-zinc-400 flex items-center gap-1 font-mono">
-                      <Phone className="w-3 h-3 text-zinc-400" />
+                <tr key={call.id} className="hover:bg-[var(--bg-surface-secondary)] transition-colors">
+                  <td className="px-4 py-3">
+                    <div className="font-semibold text-[var(--text-primary)]">{call.callerName || 'Unknown Caller'}</div>
+                    <div className="text-[11px] text-[var(--text-muted)] flex items-center gap-1 font-mono mt-0.5">
+                      <Phone className="w-3 h-3" />
                       {call.callerNumber}
                     </div>
                   </td>
-                  <td className="px-4 py-3.5">
+                  <td className="px-3 py-3">
                     {getLanguageChip(call.detectedLanguage)}
                   </td>
-                  <td className="px-4 py-3.5 max-w-xs truncate text-zinc-300">
+                  <td className="px-3 py-3 max-w-xs truncate text-[var(--text-secondary)]">
                     {call.callerIntent || 'No intent recognized'}
                   </td>
-                  <td className="px-4 py-3.5">
+                  <td className="px-3 py-3">
                     {getDispositionBadge(call.disposition, call.spamScore)}
                   </td>
-                  <td className="px-4 py-3.5 text-zinc-400 font-mono">
+                  <td className="px-3 py-3 text-[var(--text-muted)] font-mono">
                     <div className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
+                      <Clock className="w-3 h-3 text-[var(--text-muted)]" />
                       {call.durationSeconds}s
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 text-right">
+                  <td className="px-4 py-3 text-right">
                     <button
                       onClick={() => setSelectedCall(call)}
-                      className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium inline-flex items-center gap-1 transition-colors"
+                      className="btn-secondary text-xs px-2.5 py-1 inline-flex items-center gap-1"
                     >
                       <Eye className="w-3 h-3" />
-                      View
+                      Inspect
                     </button>
                   </td>
                 </tr>
@@ -150,30 +149,30 @@ export function CallTable({ calls, title = 'Recent Call Activity', showFilters =
 
       {/* Call Details Drawer/Modal */}
       {selectedCall && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-zinc-900 border border-zinc-800 p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="w-full max-w-lg card-panel p-5 shadow-2xl relative space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
               <div>
-                <h4 className="text-base font-semibold text-white">Call Forensic Details</h4>
-                <p className="text-xs text-zinc-400 font-mono">ID: {selectedCall.id}</p>
+                <h4 className="text-sm font-semibold text-[var(--text-primary)]">Call Details</h4>
+                <p className="text-[11px] text-[var(--text-muted)] font-mono">ID: {selectedCall.id}</p>
               </div>
               <button
                 onClick={() => setSelectedCall(null)}
-                className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 rounded"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-4 my-5 text-xs">
-              <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-zinc-950 border border-zinc-800/80">
+            <div className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-3 p-3 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)]">
                 <div>
-                  <span className="text-zinc-400">Caller Identity:</span>
-                  <p className="font-semibold text-zinc-100">{selectedCall.callerName || 'Unstated'}</p>
-                  <p className="text-zinc-400 font-mono">{selectedCall.callerNumber}</p>
+                  <span className="text-[var(--text-muted)]">Caller Identity:</span>
+                  <p className="font-semibold text-[var(--text-primary)]">{selectedCall.callerName || 'Unstated'}</p>
+                  <p className="text-[var(--text-muted)] font-mono">{selectedCall.callerNumber}</p>
                 </div>
                 <div>
-                  <span className="text-zinc-400">Spam Score:</span>
+                  <span className="text-[var(--text-muted)]">Spam Assessment:</span>
                   <div className="mt-1">
                     {getDispositionBadge(selectedCall.disposition, selectedCall.spamScore)}
                   </div>
@@ -181,29 +180,24 @@ export function CallTable({ calls, title = 'Recent Call Activity', showFilters =
               </div>
 
               <div>
-                <span className="text-zinc-400 font-medium">Extracted Intent:</span>
-                <p className="mt-1 p-2.5 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-200">
+                <span className="text-[var(--text-muted)] font-medium">Extracted Intent:</span>
+                <p className="mt-1 p-2 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)]">
                   {selectedCall.callerIntent}
                 </p>
               </div>
 
               <div>
-                <span className="text-zinc-400 font-medium">Call Summary & Transcript:</span>
-                <p className="mt-1 p-2.5 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-300 italic">
-                  {selectedCall.transcriptSummary || 'Transcript logged and encrypted in Stage 1 storage.'}
+                <span className="text-[var(--text-muted)] font-medium">Call Summary & Transcript:</span>
+                <p className="mt-1 p-2 rounded bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] text-[var(--text-secondary)] italic">
+                  {selectedCall.transcriptSummary || 'Transcript logged and evaluated by AI Call Agent.'}
                 </p>
-              </div>
-
-              <div className="p-3 rounded-lg bg-indigo-950/20 border border-indigo-800/30 text-indigo-300">
-                <span className="font-medium">Audio Artifact: </span>
-                <span>Encrypted in private S3 bucket. Pre-signed playback URL will activate in Stage 2.</span>
               </div>
             </div>
 
-            <div className="flex justify-end pt-3 border-t border-zinc-800">
+            <div className="flex justify-end pt-3 border-t border-[var(--border-color)]">
               <button
                 onClick={() => setSelectedCall(null)}
-                className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium"
+                className="btn-secondary text-xs"
               >
                 Close
               </button>

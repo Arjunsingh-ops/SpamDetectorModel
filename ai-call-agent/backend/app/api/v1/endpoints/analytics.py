@@ -1,7 +1,6 @@
 """Analytics and Telemetry Endpoints."""
 
 from typing import Optional
-from datetime import datetime
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db

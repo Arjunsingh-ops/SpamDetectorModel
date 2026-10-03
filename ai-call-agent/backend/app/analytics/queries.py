@@ -5,18 +5,16 @@ department/recipient breakdowns, and data quality checks.
 """
 
 from datetime import datetime, date, time, timedelta, timezone
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, Optional, Tuple
 from uuid import UUID
 import zoneinfo
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_, or_, case, distinct, desc
+from sqlalchemy import func, or_
 from app.models.call import Call
 from app.models.transfer import TransferRecord
-from app.models.spam_assessment import SpamAssessment
 from app.models.spam_report import SpamReport
 from app.models.voicemail import VoicemailMessage
 from app.models.callback_request import CallbackRequest
-from app.models.recipient import Recipient
 
 
 def get_timezone_object(tz_name: Optional[str] = None) -> zoneinfo.ZoneInfo:

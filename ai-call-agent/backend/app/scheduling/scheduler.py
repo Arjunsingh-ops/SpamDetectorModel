@@ -4,7 +4,6 @@ Tasks 14 & 15: Background job scheduler initialization, job locking, and schedul
 """
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.cron import CronTrigger
 from app.core.logging import logger
 
 _scheduler: BackgroundScheduler = None

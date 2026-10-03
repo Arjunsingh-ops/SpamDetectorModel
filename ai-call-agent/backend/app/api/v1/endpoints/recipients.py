@@ -30,6 +30,24 @@ def list_recipients(
     return query.order_by(Recipient.routing_priority.asc()).all()
 
 
+@router.post("/bulk", status_code=status.HTTP_201_CREATED)
+def bulk_create_recipients(
+    items: List[RecipientCreate],
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Bulk import list of mobile numbers into recipient directory."""
+    created = []
+    for item in items:
+        recipient = Recipient(**item.model_dump())
+        db.add(recipient)
+        created.append(recipient)
+    db.commit()
+    for r in created:
+        db.refresh(r)
+    return {"status": "success", "count": len(created), "items": created}
+
+
 @router.post("", response_model=RecipientResponse, status_code=status.HTTP_201_CREATED)
 @router.post("/", response_model=RecipientResponse, status_code=status.HTTP_201_CREATED)
 def create_recipient(
@@ -98,3 +116,4 @@ def delete_recipient(
     recipient.is_active = False
     db.commit()
     return None
+

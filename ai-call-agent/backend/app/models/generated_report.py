@@ -1,6 +1,6 @@
 """Generated Report History Entity Model."""
 
-from sqlalchemy import Column, String, Integer, Text, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, String, Integer, Text, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 from app.models.base import UUIDPrimaryKeyMixin, TimestampMixin, GUID

@@ -19,7 +19,6 @@ from reportlab.platypus import (
     KeepTogether,
 )
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
 
 
 def generate_pdf_report(
@@ -43,11 +42,9 @@ def generate_pdf_report(
 
     # Custom Color Palette
     PRIMARY = colors.HexColor("#3730A3")  # Indigo-800
-    SECONDARY = colors.HexColor("#065F46")  # Emerald-800
-    DANGER = colors.HexColor("#991B1B")     # Rose-800
-    DARK_BG = colors.HexColor("#18181B")    # Zinc-900
     TEXT_MAIN = colors.HexColor("#27272A")  # Zinc-800
     LIGHT_BG = colors.HexColor("#F4F4F5")   # Zinc-100
+
 
     title_style = ParagraphStyle(
         "ReportTitle",

@@ -3,13 +3,9 @@
 import os
 import tempfile
 from datetime import datetime, timezone
-import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.models.call import Call
-from app.models.generated_report import GeneratedReport
-from app.models.report_schedule import ReportSchedule
 from app.reports.service import ReportService
 from app.reports.csv_export import generate_csv_report
 from app.reports.excel_export import generate_excel_report

@@ -49,10 +49,7 @@ cd frontend
 npm run dev
 ```
 
-### Run Pytest Suite
-```bash
-cd backend
-pytest -v
-```
+### Interactive Dashboard Testing
+Open **`http://localhost:3000`** in your browser to access the live call simulator, bilingual voice agent testing, spam review quarantine, and report generators.
 
 For complete system details, refer to the master [`README.md`](../README.md) at the repository root.

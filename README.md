@@ -109,7 +109,6 @@ minior projct gbu/
 │   │   │   ├── reports/                # Report Generators (PDF, CSV, Excel)
 │   │   │   ├── scheduling/             # APScheduler automated cron report jobs
 │   │   │   └── integrations/           # Telephony, Voice AI, & Spam Adapters
-│   │   ├── tests/                      # Comprehensive Pytest Suite (Stage 1-8 tests)
 │   │   ├── requirements.txt            # Backend Python dependencies
 │   │   └── Dockerfile                  # Production container definition
 │   │
@@ -156,7 +155,6 @@ minior projct gbu/
 | **LLM Orchestration** | Ollama Qwen2.5 / OpenAI GPT-4o | Conversational agent & intent extraction |
 | **Spam ML Model** | Scikit-Learn (TF-IDF + Naive Bayes/LR) | Lexical scam threat classifier |
 | **Report Generation** | ReportLab (PDF), OpenPyXL (Excel), CSV | Automated report generation |
-| **Testing** | Pytest, HTTPX | Unit, Integration, and E2E API tests |
 
 ---
 
@@ -214,14 +212,24 @@ npm run dev
 
 ---
 
-## 🧪 Automated Testing & Verification
+## 🖥️ Interactive Testing & Verification via Dashboard
 
-Run the full backend test suite to verify call state transitions, adapters, spam heuristics, and scheduled reports:
+The platform is designed for direct end-to-end testing and demonstration through the **Operations Dashboard** (`http://localhost:3000`):
 
-```bash
-cd ai-call-agent/backend
-pytest -v
-```
+1. **Interactive Call Simulator** (`/`):
+   - Inject inbound mock telephony calls with custom caller IDs and transcripts.
+   - Observe live speech-to-text processing, sentiment analysis, and response generation in real time.
+2. **Bilingual Voice AI Persona Testing** (`/voice-agent`):
+   - Toggle English and Hindi voice personas, customize greeting prompts, and tune response latencies.
+3. **Multi-Factor Spam Engine Quarantine** (`/spam-review`):
+   - Review incoming calls classified by risk tiers (Safe `<40%`, Suspect `40-69%`, Quarantine `≥70%`).
+   - Audit factor breakdowns: Reputation lookup, Semantic NLP keyword triggers, and Acoustic flags.
+   - Manually approve, block, or report fraudulent numbers.
+4. **Call Routing & Transfer Rules** (`/call-routing` & `/recipients`):
+   - Test department resolution (Support, Sales, Billing, Security).
+   - Test Warm transfers (agent consultation before transfer) vs. Cold transfers (direct ring).
+5. **Operational Reports & Exports** (`/reports`):
+   - Generate, download, and review on-demand and scheduled PDF, Excel, and CSV executive call reports.
 
 ---
 

@@ -47,7 +47,7 @@ def login_for_access_token(payload: LoginRequest, db: Session = Depends(get_db))
                 user = User(
                     id=user_id,
                     email=email,
-                    full_name="Enterprise Lead Admin",
+                    full_name="Lead Administrator",
                     role=role,
                     status="active",
                     is_active=True,
@@ -65,7 +65,7 @@ def login_for_access_token(payload: LoginRequest, db: Session = Depends(get_db))
                 user={
                     "id": user_id,
                     "email": email,
-                    "fullName": "Enterprise Lead Admin",
+                    "fullName": "Lead Administrator",
                     "role": role,
                 },
             )
@@ -100,7 +100,7 @@ def get_user_profile(user: User = Depends(get_current_user)):
         return {
             "id": "dev-admin-id",
             "email": "admin@aicallagent.internal",
-            "fullName": "Enterprise Lead Admin",
+            "fullName": "Lead Administrator",
             "role": "admin",
             "isActive": True,
         }

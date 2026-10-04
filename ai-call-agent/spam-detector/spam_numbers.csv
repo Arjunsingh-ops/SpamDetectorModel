@@ -10,3 +10,5 @@ phone_number,category,reports
 1234567890,conversation detected,1
 1234567899,conversation detected,1
 1234567897,conversation detected,1
++911409876543,PHISHING_OTP,1
++919765432100,FINANCIAL_SCAM,1

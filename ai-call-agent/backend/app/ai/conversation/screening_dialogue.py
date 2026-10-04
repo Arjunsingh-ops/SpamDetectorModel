@@ -158,7 +158,7 @@ class ScreeningDialogueEngine:
         elif any(w in text_lower for w in ["whenever free", "no rush", "free time"]):
             urgency = "low"
 
-        human_requested = any(w in text_lower for w in ["speak to arjun", "connect to arjun", "human", "talk to him", "transfer me"])
+        human_requested = any(w in text_lower for w in ["speak to alex", "connect to alex", "human", "talk to him", "transfer me"])
         callback_requested = any(w in text_lower for w in ["call me back", "callback", "waapis call"])
 
         # Language Detection

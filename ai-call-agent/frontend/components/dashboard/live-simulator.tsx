@@ -12,7 +12,7 @@ export function LiveCallSimulator() {
   
   // Custom User Inputs
   const [customPhone, setCustomPhone] = useState<string>('+91 98765 43210');
-  const [customName, setCustomName] = useState<string>('Arjun Sharma');
+  const [customName, setCustomName] = useState<string>('John Doe');
   const [customSpeech, setCustomSpeech] = useState<string>('नमस्ते, मुझे सेल्स टीम से बात करनी है। (Hello, I want to speak with the sales team.)');
 
   const [simStep, setSimStep] = useState<number>(0);
@@ -178,7 +178,7 @@ export function LiveCallSimulator() {
                 type="text"
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
-                placeholder="Arjun Sharma"
+                placeholder="John Doe"
                 className="input-control w-full text-xs"
               />
             </div>

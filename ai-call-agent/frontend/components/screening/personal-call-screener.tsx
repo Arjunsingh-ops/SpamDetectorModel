@@ -65,9 +65,9 @@ export function PersonalCallScreener() {
   const [customCallerInput, setCustomCallerInput] = useState<string>('');
 
   // User Settings
-  const [userName, setUserName] = useState<string>('Arjun');
+  const [userName, setUserName] = useState<string>('Alex');
   const [assistantGreeting, setAssistantGreeting] = useState<string>(
-    "Hello, you've reached Arjun's AI assistant. May I know who's calling and what this is regarding?"
+    "Hello, you've reached Alex's AI assistant. May I know who's calling and what this is regarding?"
   );
 
   const transcriptEndRef = useRef<HTMLDivElement>(null);
@@ -77,7 +77,7 @@ export function PersonalCallScreener() {
   useEffect(() => {
     fetchScreeningSettingsApi().then((s) => {
       if (s) {
-        setUserName(s.user_name || 'Arjun');
+        setUserName(s.user_name || 'Alex');
         if (s.greeting) setAssistantGreeting(s.greeting);
       }
     });
@@ -132,7 +132,7 @@ export function PersonalCallScreener() {
 
     let phone = '+91 98112 23344';
     let name = 'Rahul';
-    let initialSpeech = "Hi, I'm Rahul from Arjun's college project team. I'm calling about tomorrow's presentation.";
+    let initialSpeech = "Hi, I'm Rahul from Alex's college project team. I'm calling about tomorrow's presentation.";
 
     if (type === 'scam') {
       phone = '+91 140 987 6543';
@@ -575,7 +575,7 @@ export function PersonalCallScreener() {
                     ) : (
                       <>
                         <span className="text-[10px] text-[var(--text-muted)] mb-0.5 px-1">
-                          {m.speaker === 'assistant' ? "Arjun's AI" : callerName || 'Caller'} · {m.timestamp}
+                          {m.speaker === 'assistant' ? "Alex's AI" : callerName || 'Caller'} · {m.timestamp}
                         </span>
                         <div
                           className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed shadow-sm ${
@@ -743,7 +743,7 @@ export function PersonalCallScreener() {
               <div className="flex flex-wrap gap-1.5 pt-1">
                 <button
                   type="button"
-                  onClick={() => setCustomCallerInput("Hi, I'm Rahul from Arjun's college project team. I'm calling about tomorrow's presentation.")}
+                  onClick={() => setCustomCallerInput("Hi, I'm Rahul from Alex's college project team. I'm calling about tomorrow's presentation.")}
                   className="text-[10px] px-2 py-1 rounded bg-[var(--bg-surface-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-color)]"
                 >
                   "Rahul · College Project"

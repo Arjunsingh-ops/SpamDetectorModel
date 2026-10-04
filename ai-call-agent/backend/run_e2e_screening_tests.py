@@ -39,7 +39,7 @@ def setup_in_memory_db():
 
     # Pre-seed verified user line recipient
     recipient = Recipient(
-        display_name="Arjun Singh (Personal Line)",
+        display_name="John Doe (Personal Line)",
         phone_number="+919876543210",
         department="Personal",
         role_title="Owner",
@@ -74,7 +74,7 @@ async def run_all_tests():
     )
     call_id = inbound["call_id"]
 
-    speech = "Hi, I'm Rahul from Arjun's college project team. I'm calling about tomorrow's presentation."
+    speech = "Hi, I'm Rahul from Alex's college project team. I'm calling about tomorrow's presentation."
     screen_res = await call_screening_orchestrator.process_caller_utterance(db, call_id, speech)
 
     assert screen_res["decision"] == "SAFE_TO_FORWARD", f"Expected SAFE_TO_FORWARD, got {screen_res['decision']}"
@@ -153,7 +153,7 @@ async def run_all_tests():
     call_id = inbound["call_id"]
 
     # Turn 1: Vague
-    await call_screening_orchestrator.process_caller_utterance(db, call_id, "Hi, is this Arjun?", question_count=1)
+    await call_screening_orchestrator.process_caller_utterance(db, call_id, "Hi, is this Alex?", question_count=1)
 
     # Turn 2: Clarifies legitimate purpose
     turn2 = await call_screening_orchestrator.process_caller_utterance(

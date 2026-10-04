@@ -198,7 +198,7 @@ export function PersonalCallScreener() {
           setRiskReason(utteranceRes.risk_assessment.reasoning);
         }
 
-        const action = utteranceRes.recommended_action;
+        const action = utteranceRes.decision || utteranceRes.risk_assessment?.recommended_action;
 
         if (action === 'SAFE_TO_FORWARD') {
           // AI says forwarding line
@@ -288,9 +288,9 @@ export function PersonalCallScreener() {
         ]);
       }
 
-      if (res.recommended_action === 'SAFE_TO_FORWARD') {
+      if (res.decision === 'SAFE_TO_FORWARD' || res.risk_assessment?.recommended_action === 'SAFE_TO_FORWARD') {
         setTimeout(() => setScreenerState('USER_RINGING'), 600);
-      } else if (res.recommended_action === 'DO_NOT_FORWARD') {
+      } else if (res.decision === 'DO_NOT_FORWARD' || res.risk_assessment?.recommended_action === 'DO_NOT_FORWARD') {
         setScreenerState('AI_HANDLED');
       }
     } catch (e) {

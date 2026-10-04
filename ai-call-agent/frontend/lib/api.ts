@@ -700,7 +700,7 @@ export async function sendCallerUtteranceApi(callId: string, speech: string) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: 'Failed to process caller utterance' }));
-    throw new Error(err.detail || 'Failed to process utterance');
+    throw new Error(err.detail || err.error?.message || 'Failed to process utterance');
   }
   return await res.json();
 }

@@ -77,14 +77,17 @@ async def handle_caller_utterance(
     -> Safe forwarding / continue screening / quarantine decision.
     """
     caller_text = speech or transcript or ""
-    res = await call_screening_orchestrator.process_caller_utterance(
-        db=db,
-        call_id=call_id,
-        caller_speech=caller_text,
-        question_count=question_count,
-        is_simulation=False,
-    )
-    return res
+    try:
+        res = await call_screening_orchestrator.process_caller_utterance(
+            db=db,
+            call_id=call_id,
+            caller_speech=caller_text,
+            question_count=question_count,
+            is_simulation=False,
+        )
+        return res
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @router.post("/calls/{id}/user-action")

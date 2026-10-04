@@ -48,7 +48,7 @@ export default function OverviewPage({ onOpenMobileNav }: PageProps) {
     <div className="flex-1 flex flex-col min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)]">
       <Header
         title="Personal AI Call Screening"
-        subtitle="AI answers first, verifies caller purpose, blocks scams, and automatically bridges safe callers to you."
+        subtitle="AI screens calls, blocks scams, and connects safe callers."
         onOpenMobileNav={onOpenMobileNav}
       />
 

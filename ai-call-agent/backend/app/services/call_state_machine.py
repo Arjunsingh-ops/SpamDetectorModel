@@ -153,6 +153,7 @@ ALLOWED_TRANSITIONS: Dict[str, Set[str]] = {
         CallState.FAILED,
     },
     CallState.USER_RINGING: {
+        CallState.SCREENING,
         CallState.BRIDGING,
         CallState.CONNECTED_TO_USER,
         CallState.USER_DECLINED,
@@ -181,6 +182,7 @@ ALLOWED_TRANSITIONS: Dict[str, Set[str]] = {
         CallState.ABANDONED,
     },
     CallState.AI_HANDLED: {
+        CallState.SCREENING,
         CallState.COMPLETED,
         CallState.FAILED,
         CallState.ABANDONED,

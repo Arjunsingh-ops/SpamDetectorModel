@@ -204,7 +204,7 @@ export function Sidebar({ collapsed = false, onToggleCollapse, onCloseMobile }: 
             </div>
             {!collapsed && (
               <div className="truncate min-w-0">
-                <p className="text-xs font-medium text-[var(--text-primary)] truncate">{user?.fullName || 'Arjun Sharma'}</p>
+                <p className="text-xs font-medium text-[var(--text-primary)] truncate">{user?.fullName || 'Lead Administrator'}</p>
                 <p className="text-[10px] text-[var(--text-muted)] font-mono uppercase tracking-wider">{role}</p>
               </div>
             )}

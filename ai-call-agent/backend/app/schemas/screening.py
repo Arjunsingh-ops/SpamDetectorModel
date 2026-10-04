@@ -16,7 +16,7 @@ class ExtractedScreeningInfo(BaseModel):
     urgency: str = Field("medium", description="low | medium | high | urgent")
     language: str = Field("en-IN", description="Detected language: en-IN | hi-IN | hinglish")
     callback_requested: bool = Field(False, description="Whether caller requested a callback")
-    human_requested: bool = Field(False, description="Whether caller explicitly asked for human/Arjun")
+    human_requested: bool = Field(False, description="Whether caller explicitly asked for human/Alex")
     stated_identity: Optional[str] = Field(None, description="Stated role (e.g. teammate, courier, delivery agent)")
     requested_action: Optional[str] = Field(None, description="Requested action (e.g. meeting, confirm delivery, discuss project)")
 
@@ -46,7 +46,7 @@ class UnifiedRiskAssessment(BaseModel):
 
 class PersonalAssistantSettings(BaseModel):
     """Personal Assistant and Call Screening Configuration."""
-    user_name: str = Field("Arjun", description="Owner/User name")
+    user_name: str = Field("Alex", description="Owner/User name")
     assistant_name: str = Field("AI Screening Assistant", description="Persona name")
     language: str = Field("en-IN", description="Preferred language (en-IN, hi-IN, mixed)")
     greeting_style: str = Field("bilingual", description="bilingual | english | hindi")

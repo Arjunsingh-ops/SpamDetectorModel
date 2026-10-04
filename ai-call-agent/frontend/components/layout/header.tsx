@@ -248,14 +248,14 @@ export function Header({ title, subtitle, onOpenMobileNav }: HeaderProps) {
                 {user?.fullName?.charAt(0) || 'A'}
               </div>
               <span className="text-xs font-medium text-[var(--text-primary)] hidden sm:inline-block">
-                {user?.fullName || 'Arjun Sharma'}
+                {user?.fullName || 'Lead Administrator'}
               </span>
             </button>
 
             {showProfileMenu && (
               <div className="absolute right-0 mt-2 w-56 card-panel bg-[var(--bg-surface)] p-2 shadow-xl z-50 text-xs space-y-1">
                 <div className="px-2 py-1.5 border-b border-[var(--border-color)]">
-                  <p className="font-semibold text-[var(--text-primary)]">{user?.fullName || 'Arjun Sharma'}</p>
+                  <p className="font-semibold text-[var(--text-primary)]">{user?.fullName || 'Lead Administrator'}</p>
                   <p className="text-[10px] text-[var(--text-muted)] font-mono">{user?.email || 'admin@telephony.internal'}</p>
                   <span className="inline-block mt-1 badge-pill badge-info uppercase text-[9px] tracking-wider">
                     Role: {role}

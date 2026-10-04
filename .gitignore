@@ -68,3 +68,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+index.html
+style.css
+script.js

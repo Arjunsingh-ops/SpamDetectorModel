@@ -734,3 +734,18 @@ export async function fetchScreeningSettingsApi() {
     max_screening_questions: 2,
   };
 }
+
+export async function refineVoiceTranscriptApi(rawTranscript: string, language: string = 'hi-IN'): Promise<{ refined_text: string; original_text: string }> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/v1/telephony/voice-transcribe`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ raw_transcript: rawTranscript, language }),
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch {}
+  // Fallback: return raw transcript as-is if backend unavailable
+  return { refined_text: rawTranscript, original_text: rawTranscript };
+}

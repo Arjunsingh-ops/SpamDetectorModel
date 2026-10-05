@@ -27,6 +27,7 @@ import {
   sendCallerUtteranceApi,
   sendUserScreeningActionApi,
   fetchScreeningSettingsApi,
+  refineVoiceTranscriptApi,
 } from '@/lib/api';
 import { useRealtime } from '@/lib/realtime-context';
 
@@ -63,6 +64,11 @@ export function PersonalCallScreener() {
   const [callDuration, setCallDuration] = useState<number>(0);
   const [isSimulationMode, setIsSimulationMode] = useState<boolean>(true);
   const [customCallerInput, setCustomCallerInput] = useState<string>('');
+  
+  // Voice Input State
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [voiceLanguage, setVoiceLanguage] = useState<string>('hi-IN');
+  const recognitionRef = useRef<any>(null);
 
   // User Settings
   const [userName, setUserName] = useState<string>('Alex');
@@ -297,6 +303,63 @@ export function PersonalCallScreener() {
       console.error('Utterance error:', e);
       setIsProcessing(false);
     }
+  };
+
+  // Voice Recording Toggle
+  const toggleRecording = () => {
+    if (isRecording) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsRecording(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Your browser doesn't support speech recognition.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = voiceLanguage;
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setIsRecording(true);
+    };
+
+    recognition.onresult = async (event: any) => {
+      setIsRecording(false);
+      const rawText = event.results[0][0].transcript;
+      
+      // Update UI with raw text immediately without blocking
+      setCustomCallerInput(rawText);
+
+      try {
+        const { refined_text } = await refineVoiceTranscriptApi(rawText, voiceLanguage);
+        // Only update if the user hasn't edited the text manually
+        setCustomCallerInput((prev) => {
+          if (prev === rawText) return refined_text;
+          return prev;
+        });
+      } catch (err) {
+        console.error("Transcription refinement failed", err);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error', event.error);
+      setIsRecording(false);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
   };
 
   // User Action: Answer call
@@ -705,9 +768,19 @@ export function PersonalCallScreener() {
                   Browser A: Caller Voice/Text Input
                 </h4>
               </div>
-              <span className="text-[11px] font-mono text-[var(--text-muted)]">
-                {screenerState !== 'IDLE' ? 'Call Active' : 'Idle'}
-              </span>
+              <div className="flex items-center gap-2">
+                <select
+                  value={voiceLanguage}
+                  onChange={(e) => setVoiceLanguage(e.target.value)}
+                  className="text-[10px] bg-[var(--bg-surface-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] rounded px-1 py-0.5 outline-none focus:border-[#0071E3]"
+                >
+                  <option value="hi-IN">Hindi / Hinglish</option>
+                  <option value="en-IN">English (India)</option>
+                </select>
+                <span className="text-[11px] font-mono text-[var(--text-muted)]">
+                  {screenerState !== 'IDLE' ? 'Call Active' : 'Idle'}
+                </span>
+              </div>
             </div>
 
             <p className="text-xs text-[var(--text-secondary)]">
@@ -716,6 +789,18 @@ export function PersonalCallScreener() {
 
             <div className="space-y-2">
               <div className="flex items-center gap-2">
+                <button
+                  onClick={toggleRecording}
+                  disabled={screenerState === 'IDLE' || screenerState === 'CONNECTED' || isProcessing}
+                  className={`p-2 rounded-xl border transition ${
+                    isRecording
+                      ? 'bg-red-500/10 border-red-500 text-red-500 animate-pulse'
+                      : 'bg-[var(--bg-surface-secondary)] border-[var(--border-color)] text-[var(--text-secondary)] hover:text-[#0071E3] hover:border-[#0071E3]'
+                  } disabled:opacity-50`}
+                  title={isRecording ? 'Stop Recording' : 'Start Voice Input'}
+                >
+                  <Mic className="w-3.5 h-3.5" />
+                </button>
                 <input
                   type="text"
                   value={customCallerInput}

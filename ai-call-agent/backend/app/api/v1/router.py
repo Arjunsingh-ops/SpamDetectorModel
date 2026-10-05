@@ -20,7 +20,7 @@ from app.api.v1.endpoints import (
     reports,
     report_schedules,
 )
-from app.api.v1 import telephony, call_events, voice, voice_profiles, conversations
+from app.api.v1 import telephony, call_events, voice, voice_profiles, conversations, voice_transcribe
 
 api_v1_router = APIRouter()
 
@@ -39,6 +39,7 @@ api_v1_router.include_router(call_events.router)
 api_v1_router.include_router(voice.router)
 api_v1_router.include_router(voice_profiles.router)
 api_v1_router.include_router(conversations.router)
+api_v1_router.include_router(voice_transcribe.router)
 api_v1_router.include_router(recipients.router)
 api_v1_router.include_router(routing.router)
 api_v1_router.include_router(transfers.router)
